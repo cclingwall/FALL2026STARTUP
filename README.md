@@ -19,22 +19,23 @@ Now, you are no longer the star of the party, John is. Want to take it back? Try
 
 ### Design
 
+![Design image](sketchup.jpeg)
+
+The screen has buttons at the top to start the game and see your score. In the middle is a mini keyboard that you tap to guess the note, and at the bottom is a leaderboard showing who has the most points as well as daily music trivia.
+
 ![Design image](mockupDesign.png)
-
-The screen has buttons at the top to start the game and see your score. In the middle will be a piano keyboard that you tap to guess the sound, and at the bottom is a leaderboard showing who has the most points as well as daily music trivia.
-
-```mermaid
-sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
-```
 
 ### Key features
 
-- Tapping a piano note corresponding to a given note frequency.
-- Describe your key feature
-- Describe your key feature
+Interactive Piano & Sound Player - The app plays a random musical note, and you click a piano key or button to guess what note it was.
+
+Personal Stats & Streak Tracking - Tracks your current winning streak, highest score, and overall guess accuracy over time (tracked using user logins).
+
+Live Leaderboard & Notifications - Shows a ranked list of top players that updates in real time, with pop-ups when someone hits a high streak.
+
+Daily Music Trivia - A fun fact box on the screen that pulls in a random music fact or tip from another website each day.
+
+AI Breakdown - An AI Breakdown of a user's progress and tips to improve.
 
 ### Technologies
 
@@ -54,10 +55,10 @@ I am going to use the required technologies in the following ways.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Git commit requirement)
-- [ ] Proper use of Markdown
-- [ ] A concise and compelling elevator pitch
-- [ ] Description of key features
+- [x] I completed the prerequisites for this deliverable (Git commit requirement)
+- [x] Proper use of Markdown
+- [x] A concise and compelling elevator pitch
+- [x] Description of key features
 - [ ] Description of how you will use each technology including your 3rd party API and use of WebSocket
 - [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
