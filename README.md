@@ -19,7 +19,7 @@ Now, you are no longer the star of the party, John is. Want to take it back? Try
 
 ### Design
 
-![Design image](.png)
+![Design image](mockupDesign.png)
 
 The screen has buttons at the top to start the game and see your score. In the middle will be a piano keyboard that you tap to guess the sound, and at the bottom is a leaderboard showing who has the most points as well as daily music trivia.
 
