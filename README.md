@@ -2,7 +2,8 @@ Pitch Royale
 
 [My Notes](notes.md)
 
-""PitchCraft is a fun, web-based game that trains your ears to recognize musical notes and chords like flashcards. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting answers right earns you points, builds up a streak, and moves your name up a global leaderboard saved to your account. You can practice alone or challenge a friend live, while a pop-up feed shows when other players hit big milestones and a daily fact box shares quick music trivia.""
+Pitch Royale is a fun, web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit bit milestones, and display daily music trivia.Later versions will include both single and multi-player options.
+
 
 > [!NOTE]
 > This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
