@@ -31,7 +31,7 @@ sequenceDiagram
 
 ### Key features
 
-- Describe your key feature
+- Tapping a piano note corresponding to a given note frequency.
 - Describe your key feature
 - Describe your key feature
 
