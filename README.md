@@ -1,4 +1,6 @@
-# Your startup name here
+LEARNPERFECTPITCHEASY
+Learn it super easy
+
 
 [My Notes](notes.md)
 
