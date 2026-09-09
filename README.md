@@ -1,8 +1,8 @@
-Pitch Royale
+### Pitch Royale
 
 [My Notes](notes.md)
 
-Pitch Royale is a fun, web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit bit milestones, and display daily music trivia.Later versions will include both single and multi-player options.
+**Pitch Royale is a web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit bit milestones, and display daily music trivia.Later versions will include both single and multi-player options.**
 
 
 > [!NOTE]
@@ -13,13 +13,13 @@ Pitch Royale is a fun, web-based ear training game where you learn to identify n
 
 ### Elevator pitch
 
-Have you ever been to a party, relishing in the glory when your friend John, with perfect pitch walks in. Suddenly someone in the room taps their finger on the wall. "What note was that?"
-"D flat." He replies.
-Now you are no longer the star of the party, John is. Want to take it back? Try Pitch Royale.
+Imagine you're at a party, relishing in the glory when your friend John, with perfect pitch walks in. Suddenly someone in the room taps their finger on the wall. "What note was that?"
+"D flat," He replies.
+Now, you are no longer the star of the party, John is. Want to take it back? Try Pitch Royale.
 
 ### Design
 
-![Design image](placeholder.png)
+![Design image](PitchCraft.png)
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
