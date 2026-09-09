@@ -12,7 +12,9 @@ Pitch Royale
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Have you ever been to a party, relishing in the glory when your friend John, with perfect pitch walks in. Suddenly someone in the room taps their finger on the wall. "What note was that?"
+"D flat." He replies.
+Now you are no longer the star of the party, John is. Want to take it back? Try Pitch Royale.
 
 ### Design
 
