@@ -19,9 +19,9 @@ Now, you are no longer the star of the party, John is. Want to take it back? Try
 
 ### Design
 
-![Design image](PitchCraft.png)
+![Design image](.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+The screen has buttons at the top to start the game and see your score. In the middle will be a piano keyboard that you tap to guess the sound, and at the bottom is a leaderboard showing who has the most points as well as daily music trivia.
 
 ```mermaid
 sequenceDiagram
