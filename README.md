@@ -60,7 +60,7 @@ I am going to use the required technologies in the following ways.
 - **React** - React for user interaction, game state (current streak, played notes, game mode), and sound playback using browser audio.
 - **Service** - Service will handle score submissions, user authentication, and call a free, third-party music API to fetch daily trivia.
 - **DB/Login** - Registers and logs in users, and saves player stats and high scores in MongoDB.
-- **WebSocket** - Broadcasts events between players, such as live score updates and pop-up notifications when someone achieves a high streak.
+- **WebSocket** - Broadcasts events between players, such as live score updates and pop-up notifications when someone achieves a high streak. Link to potential API (https://opentdb.com/api_config.php)
 
 ## 🚀 Specification Deliverable
 
