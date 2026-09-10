@@ -4,18 +4,17 @@
 
 **Pitch Royale is a web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit bit milestones, and display daily music trivia.Later versions will include both single and multi-player options.**
 
-
-> [!NOTE]
-> This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
-
-> [!NOTE]
-> If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
-
 ### Elevator pitch
 
-Imagine you're at a party, relishing in the glory when your friend John, with perfect pitch walks in. Suddenly someone in the room taps their finger on the wall. "What note was that?"
-"D flat," He replies.
-Now, you are no longer the star of the party, John is. Want to take it back? Try Pitch Royale.
+Imagine you're at a party, relishing in the glory when your friend John (who has perfect pitch) walks in. Suddenly, someone in the room taps their finger on the wall. 
+
+"What note was that?" they ask.
+
+"D flat," John replies. 
+
+Now, you are no longer the star of the party, John is.
+
+Want to take it back? Try Pitch Royale.
 
 ### Design
 
@@ -24,6 +23,20 @@ Now, you are no longer the star of the party, John is. Want to take it back? Try
 The screen has buttons at the top to start the game and see your score. In the middle is a mini keyboard that you tap to guess the note, and at the bottom is a leaderboard showing who has the most points as well as daily music trivia.
 
 ![Design image](mockupDesign.png)
+
+
+```mermaid
+sequenceDiagram
+    actor Alice
+    actor Juan
+    actor Bud
+    Alice->>Server: Bud + 1
+    Server -->>Juan: Bud + 1
+    Server -->>Bud: Bud + 1
+    Juan->>Server: Alice + 1
+    Server -->>Bud: Alice + 1
+    Server -->>Alice: Alice + 1
+```
 
 ### Key features
 
@@ -41,12 +54,12 @@ AI Breakdown - An AI Breakdown of a user's progress and tips to improve.
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - HTML for the piano keys, control buttons, score displays, and navigation in the menu.
+- **CSS** - Styles the app with a dark theme, animates key presses, and adjusts the layout to both mobile and computer screens.
+- **React** - React for user interaction, game state (current streak, played notes, game mode), and sound playback using browser audio without reloading the page.
+- **Service** - Service will handle score submissions, user authentication, and call a third-party music API to fetch daily trivia.
+- **DB/Login** - Registers and logs in users with hashed passwords, and saves player stats and high scores in MongoDB.
+- **WebSocket** - Broadcasts events between players, such as live score updates and pop-up notifications when someone achieves a high streak.
 
 ## 🚀 Specification Deliverable
 
