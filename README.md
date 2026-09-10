@@ -18,7 +18,7 @@ Want to take it back? Try Pitch Royale.
 
 ### Design
 
-![Design image](sketchup.jpeg)
+![Design image](Sketchup.jpeg)
 
 ![Design image](mockupDesign.png)
 
