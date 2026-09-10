@@ -2,11 +2,11 @@
 
 [My Notes](notes.md)
 
-**Pitch Royale is a web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit bit milestones, and display daily music trivia.Later versions will include both single and multi-player options.**
+**Pitch Royale is a web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit milestones, and show daily music trivia. Later versions will include both single and multi-player options.**
 
 ### Elevator pitch
 
-Imagine you're at a party, relishing in the glory when your friend John (who has perfect pitch) walks in. Suddenly, someone in the room taps their finger on the wall. 
+Imagine you're at a party, relishing in all the glory that comes from being the star of the party. Then, your friend John (who has perfect pitch) walks in. Suddenly, someone in the room taps their finger on the wall. 
 
 "What note was that?" they ask.
 
@@ -20,33 +20,34 @@ Want to take it back? Try Pitch Royale.
 
 ![Design image](sketchup.jpeg)
 
-The screen has buttons at the top to start the game and see your score. In the middle is a mini keyboard that you tap to guess the note, and at the bottom is a leaderboard showing who has the most points as well as daily music trivia.
-
 ![Design image](mockupDesign.png)
 
 
 ```mermaid
 sequenceDiagram
-    actor Alice
-    actor Juan
-    actor Bud
-    Alice->>Server: Bud + 1
-    Server -->>Juan: Bud + 1
-    Server -->>Bud: Bud + 1
-    Juan->>Server: Alice + 1
-    Server -->>Bud: Alice + 1
-    Server -->>Alice: Alice + 1
+    actor You
+    participant Website
+    participant Server
+    participant OtherPlayers
+
+    You->>Website: Clicks "Play Sound"
+    Website->>You: Plays a note (e.g., D flat)
+    You->>Website: Clicks the "Db" key
+    Website->>You: Shows green flash (+1 Streak)
+    Website->>Server: Sends score update (Streak: 5)
+    Server->>Server: Saves new score to Database
+    Server-->>OtherPlayers: Broadcasts "You reached a 5-note streak!"
 ```
 
 ### Key features
 
-Interactive Piano & Sound Player - The app plays a random musical note, and you click a piano key or button to guess what note it was.
+Piano & Sound Player - Plays a randomized musical note (Play notes from browser), The user interacts by clicking a piano key to guess what note it was.
 
-Personal Stats & Streak Tracking - Tracks your current winning streak, highest score, and overall guess accuracy over time (tracked using user logins).
+Stats & Streak Tracking - Tracks current winning streak, highest score, and overall guess accuracy over time. Stored for each user. Secure login over HTTPS.
 
-Live Leaderboard & Notifications - Shows a ranked list of top players that updates in real time, with pop-ups when someone hits a high streak.
+Leaderboard & Notifications - Shows a ranked list of top players, with pop-ups when someone hits a high streak.
 
-Daily Music Trivia - A fun fact box on the screen that pulls in a random music fact or tip from another website each day.
+Daily Music Trivia - A fun fact box on the screen that pulls in a music fact or tip from another website each day.
 
 AI Breakdown - An AI Breakdown of a user's progress and tips to improve.
 
@@ -72,8 +73,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] Proper use of Markdown
 - [x] A concise and compelling elevator pitch
 - [x] Description of key features
-- [ ] Description of how you will use each technology including your 3rd party API and use of WebSocket
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] Description of how you will use each technology including your 3rd party API and use of WebSocket
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ## 🚀 AWS deliverable
 
