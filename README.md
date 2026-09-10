@@ -57,9 +57,9 @@ I am going to use the required technologies in the following ways.
 
 - **HTML** - HTML for the piano keys, control buttons, score displays, and navigation in the menu.
 - **CSS** - Styles the app with a dark theme, animates key presses, and adjusts the layout to both mobile and computer screens.
-- **React** - React for user interaction, game state (current streak, played notes, game mode), and sound playback using browser audio without reloading the page.
+- **React** - React for user interaction, game state (current streak, played notes, game mode), and sound playback using browser audio.
 - **Service** - Service will handle score submissions, user authentication, and call a third-party music API to fetch daily trivia.
-- **DB/Login** - Registers and logs in users with hashed passwords, and saves player stats and high scores in MongoDB.
+- **DB/Login** - Registers and logs in users, and saves player stats and high scores in MongoDB.
 - **WebSocket** - Broadcasts events between players, such as live score updates and pop-up notifications when someone achieves a high streak.
 
 ## 🚀 Specification Deliverable
