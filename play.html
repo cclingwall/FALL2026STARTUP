@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pitch Royale | Play Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Semantic header with consistent navigation and logged-in user display. -->
+  <header>
+    <h1>Pitch Royale</h1>
+    <p>Logged in as: Alex</p>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home / Login</a>
+      <a href="play.html">Play Game</a>
+      <a href="scores.html">Leaderboard &amp; Stats</a>
+    </nav>
+  </header>
+
+  <main>
+    <section aria-labelledby="trainer-heading">
+      <h2 id="trainer-heading">Ear Training Arena</h2>
+
+      <!-- Game mode and tone playback controls. -->
+      <section aria-labelledby="controls-heading">
+        <h3 id="controls-heading">Game Controls</h3>
+        <button type="button">Single Notes</button>
+        <button type="button">Chords</button>
+        <button type="button">Play Tone</button>
+      </section>
+
+      <!-- Piano-note guess buttons and result feedback area. -->
+      <section aria-labelledby="guess-heading">
+        <h3 id="guess-heading">What did you hear?</h3>
+        <div role="group" aria-label="Piano note guesses">
+          <button type="button">C</button>
+          <button type="button">Db</button>
+          <button type="button">D</button>
+          <button type="button">Eb</button>
+          <button type="button">E</button>
+          <button type="button">F</button>
+          <button type="button">Gb</button>
+          <button type="button">G</button>
+          <button type="button">Ab</button>
+          <button type="button">A</button>
+          <button type="button">Bb</button>
+          <button type="button">B</button>
+        </div>
+        <p aria-live="polite">Correct! +1</p>
+      </section>
+    </section>
+
+    <!-- WebSocket placeholder: future real-time messages will populate this feed. -->
+    <aside aria-labelledby="activity-heading">
+      <h2 id="activity-heading">Live Activity Feed</h2>
+      <ul>
+        <li>Sarah just hit a 5-note streak!</li>
+        <li>Ben connected</li>
+        <li>Jordan reached a new personal best!</li>
+      </ul>
+    </aside>
+  </main>
+
+  <!-- Footer includes the project author and GitHub repository link. -->
+  <footer>
+    <p>Created by Alex | <a href="https://github.com/your-github-username/pitch-royale">Pitch Royale GitHub Repository</a></p>
+  </footer>
+</body>
+</html>
