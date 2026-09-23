@@ -88,7 +88,7 @@ nav a,
 a {
   color: var(--gold-light);
   text-decoration: none;
-  transition: color 180ms ease, border-color 180ms ease;
+  transition: color 0.4s ease, border-color 0.4s ease;
 }
 
 nav a {
@@ -111,6 +111,7 @@ a:focus-visible {
 main {
   flex: 1 0 auto;
   width: 100%;
+  animation: glideUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 main > .row {
@@ -124,6 +125,12 @@ main > .row {
   border-radius: 2px;
   background: linear-gradient(145deg, rgba(31, 31, 31, 0.95), rgba(16, 16, 16, 0.98));
   box-shadow: var(--shadow);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.luxury-panel:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
 }
 
 section + section {
@@ -162,6 +169,15 @@ img {
   border: 1px solid var(--line);
   object-fit: cover;
   filter: saturate(0.75) contrast(1.05);
+}
+
+.luxury-panel img {
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.7s ease;
+}
+
+.luxury-panel img:hover {
+  transform: scale(1.03);
+  filter: saturate(0.85) contrast(1.05) brightness(1.08);
 }
 
 .carousel img {
@@ -206,7 +222,7 @@ button {
   font: 600 0.75rem 'Montserrat', sans-serif;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+  transition: background 0.4s ease, color 0.4s ease, transform 0.4s ease;
 }
 
 button:hover,
@@ -354,7 +370,18 @@ footer p {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  transition: opacity 300ms ease, visibility 300ms ease;
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+@keyframes glideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulse {
