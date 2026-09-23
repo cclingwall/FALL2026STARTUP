@@ -491,6 +491,13 @@ footer {
   flex-shrink: 0;
   padding: 1.5rem 1.25rem;
   border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+footer p {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
 
 #heroCarousel .carousel-control-prev,
 #heroCarousel .carousel-control-next {
@@ -506,18 +513,13 @@ footer {
 #heroCarousel .carousel-control-prev:hover,
 #heroCarousel .carousel-control-prev:focus-visible,
 #heroCarousel .carousel-control-next:hover,
-#heroCarousel .carousel-control-next:focus-visible {
+#heroCarousel .carousel-control-next:focus-visible,
+#heroCarousel .carousel-control-prev:active,
+#heroCarousel .carousel-control-next:active {
   border-color: var(--soft-light);
   background: rgba(176, 141, 117, 0.88);
   color: var(--primary-dark);
   transform: translateY(-50%);
-}
-  text-align: center;
-}
-
-footer p {
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
 }
 
 #intro-overlay {
