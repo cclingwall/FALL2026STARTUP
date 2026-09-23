@@ -491,6 +491,27 @@ footer {
   flex-shrink: 0;
   padding: 1.5rem 1.25rem;
   border-top: 1px solid var(--line);
+
+#heroCarousel .carousel-control-prev,
+#heroCarousel .carousel-control-next {
+  min-height: 0;
+  padding: 0;
+  border: 1px solid rgba(176, 141, 117, 0.5);
+  border-radius: 2px;
+  background: rgba(74, 14, 23, 0.82);
+  color: var(--soft-light);
+  transform: translateY(-50%);
+}
+
+#heroCarousel .carousel-control-prev:hover,
+#heroCarousel .carousel-control-prev:focus-visible,
+#heroCarousel .carousel-control-next:hover,
+#heroCarousel .carousel-control-next:focus-visible {
+  border-color: var(--soft-light);
+  background: rgba(176, 141, 117, 0.88);
+  color: var(--primary-dark);
+  transform: translateY(-50%);
+}
   text-align: center;
 }
 
