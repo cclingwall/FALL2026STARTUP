@@ -4,8 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pitch Royale | Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="home-page">
+  <div id="intro-overlay" role="button" tabindex="0" aria-label="Click anywhere to begin">
+    <span>Click anywhere to begin</span>
+  </div>
   <!-- Semantic header with consistent navigation and logged-in user display. -->
   <header>
     <h1>Pitch Royale</h1>
@@ -17,40 +25,78 @@
     </nav>
   </header>
 
-  <main>
-    <!-- Welcome text explains how the ear-training game works. -->
-    <section aria-labelledby="welcome-heading">
-      <h2 id="welcome-heading">Welcome to Pitch Royale</h2>
-      <p>Train your musical ear by listening to a note or chord, then selecting the matching piano key. Correct guesses earn points and build your streak on the leaderboard.</p>
-      <!-- Application image requirement: replace this source with the final project logo if desired. -->
-      <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="A piano keyboard for ear-training practice" width="900" height="300" loading="lazy">
-    </section>
+  <main class="container py-5">
+    <div class="row g-4">
+      <section class="col-12 p-0 overflow-hidden carousel slide carousel-fade" id="heroCarousel" data-bs-ride="carousel" aria-label="Pitch Royale highlights">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="https://images.unsplash.com/photo-1552422535-c45813c61732?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Dark macro shot of piano keys" width="1200" height="400" style="height: 400px; object-fit: cover; filter: brightness(0.6);">
+            <div class="carousel-caption">
+              <h2>Master Every Note</h2>
+              <p>Refine your ear in an atmosphere built for focused listening.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="https://images.unsplash.com/photo-1601312378427-822b2b41da35?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Luxury studio audio equipment" width="1200" height="400" style="height: 400px; object-fit: cover; filter: brightness(0.6);">
+            <div class="carousel-caption">
+              <h2>Listen With Precision</h2>
+              <p>Enter the studio and build your musical instinct one challenge at a time.</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Previous slide">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" aria-label="Next slide">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </button>
+      </section>
 
-    <!-- Login placeholder with username, password, and required account actions. -->
-    <section aria-labelledby="login-heading">
-  <h2 id="login-heading">Account Login</h2>
-  <form action="play.html" method="get">
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username" autocomplete="username" required>
+      <section class="col-12 col-lg-6 d-flex" aria-labelledby="login-heading">
+        <div class="luxury-panel w-100">
+          <h2 id="login-heading">Account Login</h2>
+          <form class="row g-3" action="play.html" method="get">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" autocomplete="username" required>
 
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" autocomplete="current-password" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
 
-    <button type="submit">Login</button>
-    <a href="play.html">Create Account</a>
-  </form>
-</section>
+            <button type="submit">Login</button>
+            <a href="play.html">Create Account</a>
+          </form>
+        </div>
+      </section>
 
-    <!-- Third-party service placeholder for the future daily trivia API. -->
-    <section aria-labelledby="trivia-heading">
-      <h2 id="trivia-heading">Daily Music Trivia</h2>
-      <p id="daily-trivia">A daily music fact from an external API will appear here.</p>
-    </section>
+      <section class="col-12 col-lg-6 d-flex" aria-labelledby="trivia-heading">
+        <div class="luxury-panel w-100">
+          <h2 id="trivia-heading">Daily Music Trivia</h2>
+          <p id="daily-trivia">A daily music fact from an external API will appear here.</p>
+        </div>
+      </section>
+    </div>
   </main>
 
   <!-- Footer includes the project author and GitHub repository link. -->
   <footer>
     <p>Created by Curtis Lingwall| <a href="https://github.com/cclingwall/FALL2026STARTUP" rel="noopener noreferrer">Pitch Royale GitHub Repository</a></p>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const introOverlay = document.querySelector('#intro-overlay');
+
+    function dismissIntro() {
+      introOverlay.classList.add('is-dismissed');
+      introOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    introOverlay.addEventListener('click', dismissIntro);
+    introOverlay.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        dismissIntro();
+      }
+    });
+  </script>
 </body>
 </html>

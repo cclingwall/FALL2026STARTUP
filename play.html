@@ -4,8 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pitch Royale | Play Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="play-page">
   <!-- Semantic header with consistent navigation and logged-in user display. -->
   <header>
     <h1>Pitch Royale</h1>
@@ -17,12 +22,13 @@
   </nav>
   </header>
 
-  <main>
-    <section aria-labelledby="trainer-heading">
+  <main class="container py-5">
+    <div class="row g-4">
+    <section class="col-12 col-xl-8 luxury-panel" aria-labelledby="trainer-heading">
       <h2 id="trainer-heading">Ear Training Arena</h2>
 
       <!-- Game mode and tone playback controls. -->
-      <section aria-labelledby="controls-heading">
+      <section class="game-section" aria-labelledby="controls-heading">
         <h3 id="controls-heading">Game Controls</h3>
         <button type="button">Single Notes</button>
         <button type="button">Chords</button>
@@ -30,7 +36,7 @@
       </section>
 
       <!-- Piano-note guess buttons and result feedback area. -->
-      <section aria-labelledby="guess-heading">
+      <section class="game-section" aria-labelledby="guess-heading">
         <h3 id="guess-heading">What did you hear?</h3>
           <ul aria-label="Piano note guesses">
           <li><button type="button" value="C">C</button></li>
@@ -51,7 +57,7 @@
     </section>
 
     <!-- WebSocket placeholder: future real-time messages will populate this feed. -->
-    <aside aria-labelledby="activity-heading">
+    <aside class="col-12 col-xl-4 luxury-panel" aria-labelledby="activity-heading">
       <h2 id="activity-heading">Live Activity Feed</h2>
       <ul>
         <li>"Sarah just hit a 5-note streak!"</li>
@@ -59,6 +65,7 @@
         <li>"Jordan reached a new personal best!"</li>
       </ul>
     </aside>
+    </div>
   </main>
 
   <!-- Footer includes the project author and GitHub repository link. -->
