@@ -164,24 +164,31 @@ img {
   display: block;
   width: 100%;
   max-width: 100%;
-  height: auto;
-  margin-top: 1.5rem;
-  border: 1px solid var(--line);
+  height: 100%;
   object-fit: cover;
   filter: saturate(0.75) contrast(1.05);
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.8s ease;
 }
 
-.luxury-panel img {
-  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.7s ease;
+.img-zoom-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  margin-top: 1.5rem;
 }
 
-.luxury-panel img:hover {
-  transform: scale(1.03);
+.img-zoom-wrapper:hover img {
+  transform: scale(1.05);
   filter: saturate(0.85) contrast(1.05) brightness(1.08);
 }
 
 .carousel img {
   margin-top: 0;
+}
+
+.carousel-item {
+  transition: transform 0.8s ease-in-out;
 }
 
 label {
