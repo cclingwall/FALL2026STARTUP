@@ -15,14 +15,17 @@
     <span>Click anywhere to begin</span>
   </div>
   <!-- Semantic header with consistent navigation and logged-in user display. -->
-  <header>
+  <header class="d-flex justify-content-between align-items-center px-4 py-3">
     <h1>Pitch Royale</h1>
-    <p>Logged in as: Alex</p>
     <nav aria-label="Main navigation">
       <a href="index.html">Home / Login</a>
       <a href="play.html">Play Game</a>
       <a href="scores.html">Leaderboard &amp; Stats</a>
     </nav>
+    <div class="user-status">
+      <span>Logged in as:</span>
+      <span class="user-avatar" aria-hidden="true"></span>
+    </div>
   </header>
 
   <main class="container py-5">

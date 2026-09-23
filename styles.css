@@ -52,28 +52,47 @@ body {
 }
 
 header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
   width: 100%;
   padding: 2.25rem clamp(1.25rem, 5vw, 5rem) 1.5rem;
   border-bottom: 1px solid var(--line);
-  background: rgba(10, 10, 10, 0.92);
+  background: rgba(10, 10, 10, 0.78);
+  backdrop-filter: blur(10px);
 }
 
 header h1 {
   color: var(--gold-light);
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(3rem, 8vw, 5.75rem);
+  font-size: 2rem;
   font-weight: 400;
   line-height: 1;
-  text-align: center;
+  text-align: left;
   text-shadow: 0 0 24px rgba(212, 175, 55, 0.2);
 }
 
-header p {
+.user-status {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
   color: var(--muted);
   font-size: 0.72rem;
   letter-spacing: 0.16em;
-  text-align: center;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.user-avatar {
+  display: inline-block;
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.12);
 }
 
 nav {
@@ -81,7 +100,7 @@ nav {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem 1.5rem;
-  margin-top: 1.5rem;
+  margin-top: 0;
 }
 
 nav a,
