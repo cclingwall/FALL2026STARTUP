@@ -16,17 +16,28 @@
   </div>
   <!-- Semantic header with consistent navigation and logged-in user display. -->
   <header class="d-flex justify-content-between align-items-center px-4 py-3">
+    <button class="sidebar-toggle" type="button" aria-controls="page-sidebar" aria-expanded="false">
+      <span aria-hidden="true">&#9776;</span>
+      <span class="visually-hidden">Open navigation menu</span>
+    </button>
     <h1>Pitch Royale</h1>
-    <nav aria-label="Main navigation">
-      <a href="index.html">Home / Login</a>
-      <a href="play.html">Play Game</a>
-      <a href="scores.html">Leaderboard &amp; Stats</a>
-    </nav>
     <div class="user-status">
       <span>Logged in as:</span>
       <span class="user-avatar" aria-hidden="true"></span>
     </div>
   </header>
+  <aside id="page-sidebar" class="page-sidebar" aria-label="Main navigation" aria-hidden="true">
+    <div class="sidebar-heading">
+      <h2>Navigate</h2>
+      <button class="sidebar-close" type="button" aria-label="Close navigation menu">&times;</button>
+    </div>
+    <nav>
+      <a href="index.html" aria-current="page">Home / Login</a>
+      <a href="play.html">Play Game</a>
+      <a href="scores.html">Leaderboard &amp; Stats</a>
+    </nav>
+  </aside>
+  <button class="sidebar-backdrop" type="button" aria-label="Close navigation menu"></button>
 
   <main class="container py-5">
     <div class="row g-4">
@@ -86,6 +97,26 @@
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    const sidebar = document.querySelector('#page-sidebar');
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebarClose = document.querySelector('.sidebar-close');
+    const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
+
+    function setSidebarOpen(isOpen) {
+      sidebar.classList.toggle('is-open', isOpen);
+      sidebarBackdrop.classList.toggle('is-visible', isOpen);
+      sidebar.setAttribute('aria-hidden', String(!isOpen));
+      sidebarToggle.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) sidebarClose.focus();
+    }
+
+    sidebarToggle.addEventListener('click', () => setSidebarOpen(true));
+    sidebarClose.addEventListener('click', () => setSidebarOpen(false));
+    sidebarBackdrop.addEventListener('click', () => setSidebarOpen(false));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setSidebarOpen(false);
+    });
+
     const introOverlay = document.querySelector('#intro-overlay');
 
     function dismissIntro() {

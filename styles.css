@@ -75,6 +75,27 @@ header h1 {
   text-shadow: 0 0 24px rgba(212, 175, 55, 0.2);
 }
 
+.sidebar-toggle,
+.sidebar-close {
+  min-height: 2.5rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line);
+  color: var(--gold-light);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.sidebar-toggle {
+  order: -1;
+}
+
+.sidebar-toggle:hover,
+.sidebar-toggle:focus-visible,
+.sidebar-close:hover,
+.sidebar-close:focus-visible {
+  color: #111;
+}
+
 .user-status {
   display: flex;
   align-items: center;
@@ -125,6 +146,77 @@ a:hover,
 a:focus-visible {
   color: #fff;
   border-color: var(--gold);
+}
+
+.page-sidebar {
+  position: fixed;
+  z-index: 1100;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(20rem, 88vw);
+  padding: 2rem 1.5rem;
+  border-right: 1px solid var(--line);
+  background: rgba(16, 16, 16, 0.98);
+  box-shadow: 20px 0 60px rgba(0, 0, 0, 0.45);
+  transform: translateX(-105%);
+  transition: transform 0.5s ease;
+}
+
+.page-sidebar.is-open {
+  transform: translateX(0);
+}
+
+.sidebar-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.sidebar-heading h2 {
+  margin: 0;
+  font-size: 1.65rem;
+}
+
+.page-sidebar nav {
+  display: grid;
+  justify-content: stretch;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.page-sidebar nav a {
+  padding: 0.85rem 0.25rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.16);
+}
+
+.page-sidebar nav a[aria-current='page'] {
+  color: #fff;
+  border-color: var(--gold);
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  z-index: 1050;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.62);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.sidebar-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 main {
