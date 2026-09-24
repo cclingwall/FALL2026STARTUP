@@ -102,12 +102,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [X] **Visually appealing colors and layout. No overflowing elements.** 
-- [X] **Use of a CSS framework**
-- [X] **All visual elements styled using CSS** 
-- [X] **Responsive to window resizing using flexbox and/or grid display** 
-- [X] **Use of a imported font** 
-- [X] **Use of different types of selectors including element, class, ID, and pseudo selectors** 
+- [X] **Visually appealing colors and layout. No overflowing elements.** CSS variables establish a dark luxury color palette.
+- [X] **Use of a CSS framework** Bootstrap 5 is imported via CDN in the <head> of all HTML files.
+- [X] **All visual elements styled using CSS** Styles.css overrides default browser styling for elements like buttons, inputs, and tables.
+- [X] **Responsive to window resizing using flexbox and/or grid display** Flexbox handles the overall page layout.
+- [X] **Use of a imported font** Three custom Google Fonts are imported in the HTML and applied to headings and body text via CSS.
+- [X] **Use of different types of selectors including element, class, ID, and pseudo selectors**  The stylesheet uses a mix of elements (h2), class (.luxury-panel), ID (#intro-overlay), and pseudo-selectors (:hover).   
 
 ## 🚀 React part 1: Routing deliverable
 
