@@ -1,3 +1,4 @@
+/* Design tokens keep the luxury palette consistent across every page. */
 :root {
   --primary-dark: #1a1110;
   --secondary-dark: #4a0e17;
@@ -15,18 +16,21 @@
   --shadow: 0 18px 50px rgba(26, 17, 16, 0.58);
 }
 
+/* Apply predictable sizing so borders and padding do not create overflow. */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+/* Establish the page canvas and preserve the dark theme before content loads. */
 html {
   min-height: 100%;
   background: var(--obsidian);
   color-scheme: dark;
 }
 
+/* Remove browser spacing so each component can define its own rhythm. */
 body,
 h1,
 h2,
@@ -41,6 +45,7 @@ caption {
   margin: 0;
 }
 
+/* Use a full-height flex column so main content expands above the footer. */
 body {
   min-height: 100vh;
   display: flex;
@@ -55,6 +60,7 @@ body {
   line-height: 1.7;
 }
 
+/* Keep the site header visible while scrolling and give it a glass effect. */
 header {
   position: sticky;
   top: 0;
@@ -69,6 +75,7 @@ header {
   backdrop-filter: blur(10px);
 }
 
+/* Treat the wordmark as the primary brand signal without letting it dominate. */
 header h1 {
   color: var(--gold-light);
   font-family: 'Great Vibes', cursive;
@@ -79,6 +86,7 @@ header h1 {
   text-shadow: 0 0 24px rgba(176, 141, 117, 0.28);
 }
 
+/* Share compact button geometry between the menu and close controls. */
 .sidebar-toggle,
 .sidebar-close {
   min-height: 2.5rem;
@@ -89,10 +97,12 @@ header h1 {
   line-height: 1;
 }
 
+/* Keep the menu control at the leading edge of the header flex row. */
 .sidebar-toggle {
   order: -1;
 }
 
+/* Use the accent color on control hover while preserving keyboard visibility. */
 .sidebar-toggle:hover,
 .sidebar-toggle:focus-visible,
 .sidebar-close:hover,
@@ -100,6 +110,7 @@ header h1 {
   color: var(--primary-dark);
 }
 
+/* Present the logged-in identity as a quiet utility element. */
 .user-status {
   display: flex;
   align-items: center;
@@ -111,6 +122,7 @@ header h1 {
   white-space: nowrap;
 }
 
+/* The empty avatar provides a visual account anchor without user data. */
 .user-avatar {
   display: inline-block;
   width: 1.65rem;
@@ -120,6 +132,7 @@ header h1 {
   background: rgba(176, 141, 117, 0.16);
 }
 
+/* Allow navigation links to wrap instead of forcing horizontal overflow. */
 nav {
   display: flex;
   flex-wrap: wrap;
@@ -128,6 +141,7 @@ nav {
   margin-top: 0;
 }
 
+/* Establish the shared link color and a slow luxury-style color transition. */
 nav a,
 a {
   color: var(--gold-light);
@@ -135,6 +149,7 @@ a {
   transition: color 0.4s ease, border-color 0.4s ease;
 }
 
+/* Give navigation links a restrained uppercase treatment for scanning. */
 nav a {
   padding: 0.35rem 0;
   border-bottom: 1px solid transparent;
@@ -144,6 +159,7 @@ nav a {
   text-transform: uppercase;
 }
 
+/* Reinforce interaction with a border and paper-toned hover color. */
 nav a:hover,
 nav a:focus-visible,
 a:hover,
@@ -152,6 +168,7 @@ a:focus-visible {
   border-color: var(--gold);
 }
 
+/* Hide the drawer off-canvas until the menu script adds its open state. */
 .page-sidebar {
   position: fixed;
   z-index: 1100;
@@ -167,10 +184,12 @@ a:focus-visible {
   transition: transform 0.5s ease;
 }
 
+/* Slide the drawer into view without changing the document layout. */
 .page-sidebar.is-open {
   transform: translateX(0);
 }
 
+/* Separate the drawer title from its close control and link list. */
 .sidebar-heading {
   display: flex;
   align-items: center;
@@ -179,11 +198,13 @@ a:focus-visible {
   border-bottom: 1px solid var(--line);
 }
 
+/* Keep the drawer heading compact so links remain visible on small screens. */
 .sidebar-heading h2 {
   margin: 0;
   font-size: 1.65rem;
 }
 
+/* Stack drawer links vertically for a focused navigation workflow. */
 .page-sidebar nav {
   display: grid;
   justify-content: stretch;
@@ -191,16 +212,19 @@ a:focus-visible {
   margin-top: 1.5rem;
 }
 
+/* Give each drawer link a large, keyboard-friendly hit area. */
 .page-sidebar nav a {
   padding: 0.85rem 0.25rem;
   border-bottom: 1px solid rgba(176, 141, 117, 0.24);
 }
 
+/* Mark the current page with the strongest available accent treatment. */
 .page-sidebar nav a[aria-current='page'] {
   color: var(--soft-light);
   border-color: var(--gold);
 }
 
+/* Dim the page behind the drawer and block accidental background clicks. */
 .sidebar-backdrop {
   position: fixed;
   z-index: 1050;
@@ -217,22 +241,26 @@ a:focus-visible {
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
+/* Reveal the backdrop only while the drawer is open. */
 .sidebar-backdrop.is-visible {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
 }
 
+/* Animate the main content into place while allowing it to fill the viewport. */
 main {
   flex: 1 0 auto;
   width: 100%;
   animation: glideUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
+/* Make Bootstrap row children stretch to a shared visual height. */
 main > .row {
   align-items: stretch;
 }
 
+/* Frame content in dark burgundy panels with a subtle lift-ready shadow. */
 .luxury-panel {
   height: 100%;
   padding: clamp(1.25rem, 3vw, 2.5rem);
@@ -243,15 +271,18 @@ main > .row {
   transition: transform 0.5s ease, box-shadow 0.5s ease;
 }
 
+/* Lift panels on hover to make the interface feel responsive and tactile. */
 .luxury-panel:hover {
   transform: translateY(-4px);
   box-shadow: 0 25px 60px rgba(26, 17, 16, 0.76);
 }
 
+/* Add consistent breathing room between stacked semantic sections. */
 section + section {
   margin-top: 2rem;
 }
 
+/* Use the display serif for hierarchy while keeping the palette restrained. */
 h2,
 h3 {
   color: var(--gold-light);
@@ -260,21 +291,25 @@ h3 {
   line-height: 1.2;
 }
 
+/* Scale major headings responsively without overflowing narrow screens. */
 h2 {
   margin-bottom: 1rem;
   font-size: clamp(1.75rem, 4vw, 2.6rem);
 }
 
+/* Keep tertiary headings readable inside compact panels and game controls. */
 h3 {
   margin-bottom: 0.9rem;
   font-size: 1.25rem;
 }
 
+/* Apply the muted neutral to supporting copy and list content. */
 p,
 li {
   color: var(--muted);
 }
 
+/* Normalize images so external assets fill their assigned responsive frame. */
 img {
   display: block;
   width: 100%;
@@ -284,6 +319,7 @@ img {
   filter: saturate(0.75) contrast(1.05);
 }
 
+/* Clip standalone image content so its wrapper owns spacing and boundaries. */
 .img-zoom-wrapper {
   width: 100%;
   overflow: hidden;
@@ -292,15 +328,18 @@ img {
   margin-top: 1.5rem;
 }
 
+/* Remove the generic image margin inside the edge-to-edge carousel. */
 .carousel img {
   margin-top: 0;
 }
 
+/* Establish a positioning context for the carousel overlay and captions. */
 .carousel-item {
   position: relative;
   transition: transform 0.8s ease-in-out;
 }
 
+/* Darken and warm each slide evenly so text remains readable over highlights. */
 .carousel-item::before {
   position: absolute;
   z-index: 1;
@@ -310,11 +349,13 @@ img {
   pointer-events: none;
 }
 
+/* Apply the final image treatment while preserving the requested crop. */
 .carousel img {
   margin-top: 0;
   filter: brightness(0.48) saturate(0.8) sepia(0.16) contrast(1.08);
 }
 
+/* Place captions in a readable translucent panel above the image treatment. */
 .carousel-caption {
   z-index: 2;
   right: 12%;
@@ -329,19 +370,23 @@ img {
   transform: translateY(50%);
 }
 
+/* Force both caption text levels to use the high-contrast paper tone. */
 .carousel-caption h2,
 .carousel-caption p {
   color: var(--soft-light);
 }
 
+/* Tighten the caption heading-to-body relationship. */
 .carousel-caption h2 {
   margin-bottom: 0.35rem;
 }
 
+/* Give supporting caption copy enough weight against the dark overlay. */
 .carousel-caption p {
   font-weight: 500;
 }
 
+/* Size and center the carousel controls without inheriting content layout. */
 .carousel-control-prev,
 .carousel-control-next {
   top: 50%;
@@ -356,14 +401,17 @@ img {
   transition: background 0.4s ease, border-color 0.4s ease, opacity 0.4s ease;
 }
 
+/* Anchor the previous arrow to the left edge of the image frame. */
 .carousel-control-prev {
   left: 1rem;
 }
 
+/* Anchor the next arrow to the right edge of the image frame. */
 .carousel-control-next {
   right: 1rem;
 }
 
+/* Brighten the control surface while keeping its location stable on hover. */
 .carousel-control-prev:hover,
 .carousel-control-prev:focus-visible,
 .carousel-control-next:hover,
@@ -373,11 +421,13 @@ img {
   opacity: 1;
 }
 
+/* Recolor Bootstrap's built-in SVG arrows to match the paper accent. */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   filter: brightness(0) saturate(100%) invert(95%) sepia(7%) saturate(379%) hue-rotate(330deg) brightness(104%) contrast(93%);
 }
 
+/* Keep form labels visible and consistent with the small-interface scale. */
 label {
   display: block;
   color: var(--text);
@@ -387,6 +437,7 @@ label {
   text-transform: uppercase;
 }
 
+/* Style inputs as dark inset fields with a clear focus ring. */
 input {
   display: block;
   width: 100%;
@@ -400,11 +451,13 @@ input {
   font: inherit;
 }
 
+/* Make keyboard focus easy to locate without introducing a bright new color. */
 input:focus {
   border-color: var(--gold);
   box-shadow: 0 0 0 2px rgba(176, 141, 117, 0.26);
 }
 
+/* Define the shared control language for buttons across all pages. */
 button {
   min-height: 2.8rem;
   padding: 0.65rem 1rem;
@@ -419,6 +472,7 @@ button {
   transition: background 0.4s ease, color 0.4s ease, transform 0.4s ease;
 }
 
+/* Give controls a subtle upward response while preserving their dimensions. */
 button:hover,
 button:focus-visible {
   background: var(--gold);
@@ -426,37 +480,45 @@ button:focus-visible {
   transform: translateY(-2px);
 }
 
+/* Return active buttons to their resting position when pressed. */
 button:active {
   transform: translateY(0);
 }
 
+/* Let login and newsletter actions fill their available form width. */
 form button {
   width: 100%;
 }
 
+/* Align secondary form actions with their neighboring fields. */
 form a {
   align-self: center;
   font-size: 0.8rem;
 }
 
+/* Divide game controls from the guessing area with a fine accent rule. */
 .game-section {
   padding: 1.25rem 0;
   border-top: 1px solid var(--line);
 }
 
+/* Give the first game section enough space below the arena heading. */
 .game-section:first-of-type {
   margin-top: 1.5rem;
 }
 
+/* Keep the compact game-mode buttons separated without disrupting the row. */
 .play-page .game-section > button {
   margin: 0.25rem 0.35rem 0.25rem 0;
 }
 
+/* Remove browser list markers so lists use the site's custom spacing. */
 ul {
   padding-left: 1.25rem;
   list-style: none;
 }
 
+/* Arrange piano guesses into a stable responsive button grid. */
 .play-page ul[aria-label='Piano note guesses'] {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -465,17 +527,20 @@ ul {
   list-style: none;
 }
 
+/* Make each piano key occupy its complete grid cell. */
 .play-page ul[aria-label='Piano note guesses'] button {
   width: 100%;
   min-height: 3.5rem;
 }
 
+/* Highlight live game feedback using the warm accent color. */
 .play-page [aria-live='polite'] {
   margin-top: 1rem;
   color: var(--gold-light);
   font-weight: 600;
 }
 
+/* Space activity and stats lists for quick scanning. */
 aside ul,
 .scores-page section ul {
   display: grid;
@@ -483,6 +548,7 @@ aside ul,
   padding-left: 1.2rem;
 }
 
+/* Keep wide leaderboard data readable while allowing horizontal scrolling. */
 table {
   display: block;
   width: 100%;
@@ -492,6 +558,7 @@ table {
   white-space: nowrap;
 }
 
+/* Style table captions as quiet metadata rather than competing headings. */
 caption {
   margin-bottom: 0.8rem;
   color: var(--muted);
@@ -501,6 +568,7 @@ caption {
   text-transform: uppercase;
 }
 
+/* Give table cells enough room for comparison and visual separation. */
 th,
 td {
   padding: 0.85rem 1rem;
@@ -508,6 +576,7 @@ td {
   text-align: left;
 }
 
+/* Use the warm neutral for table column labels. */
 th {
   color: var(--gold-light);
   font-size: 0.72rem;
@@ -515,14 +584,17 @@ th {
   text-transform: uppercase;
 }
 
+/* Keep table values subordinate to their headers. */
 td {
   color: var(--muted);
 }
 
+/* Add a restrained row highlight to support leaderboard scanning. */
 tbody tr:hover {
   background: rgba(176, 141, 117, 0.11);
 }
 
+/* Keep the footer at the bottom while separating it from page content. */
 footer {
   flex-shrink: 0;
   padding: 1.5rem 1.25rem;
@@ -530,11 +602,13 @@ footer {
   text-align: center;
 }
 
+/* Reduce footer metadata so the main content remains the visual priority. */
 footer p {
   font-size: 0.72rem;
   letter-spacing: 0.04em;
 }
 
+/* Reassert carousel sizing after global button rules are applied. */
 #heroCarousel .carousel-control-prev,
 #heroCarousel .carousel-control-next {
   min-height: 0;
@@ -546,6 +620,7 @@ footer p {
   transform: translateY(-50%);
 }
 
+/* Preserve the centered arrow position through hover, focus, and activation. */
 #heroCarousel .carousel-control-prev:hover,
 #heroCarousel .carousel-control-prev:focus-visible,
 #heroCarousel .carousel-control-next:hover,
@@ -558,6 +633,7 @@ footer p {
   transform: translateY(-50%);
 }
 
+/* Cover the page with an intentional entry moment before interaction begins. */
 #intro-overlay {
   position: fixed;
   z-index: 10;
@@ -574,15 +650,18 @@ footer p {
   text-transform: uppercase;
 }
 
+/* Pulse only the prompt text so the overlay remains calm rather than flashy. */
 #intro-overlay span {
   animation: pulse 2.2s ease-in-out infinite;
 }
 
+/* Make keyboard focus visible when the entry overlay is selected. */
 #intro-overlay:focus-visible {
   outline: 2px solid var(--gold-light);
   outline-offset: -0.75rem;
 }
 
+/* Fade the overlay away and stop it from intercepting page interaction. */
 #intro-overlay.is-dismissed {
   opacity: 0;
   pointer-events: none;
@@ -590,6 +669,7 @@ footer p {
   transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
+/* Move page content upward during the initial load for a composed entrance. */
 @keyframes glideUp {
   from {
     opacity: 0;
@@ -601,6 +681,7 @@ footer p {
   }
 }
 
+/* Gently pulse the entry prompt to invite the first interaction. */
 @keyframes pulse {
   0%,
   100% {
@@ -613,6 +694,7 @@ footer p {
   }
 }
 
+/* Reduce header density and guess-grid columns on narrow screens. */
 @media (max-width: 575.98px) {
   header {
     padding-top: 1.5rem;
@@ -628,6 +710,7 @@ footer p {
   }
 }
 
+/* Respect users who request reduced motion at the system level. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
