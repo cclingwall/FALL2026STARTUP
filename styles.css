@@ -297,7 +297,49 @@ img {
 }
 
 .carousel-item {
+  position: relative;
   transition: transform 0.8s ease-in-out;
+}
+
+.carousel-item::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: '';
+  background: linear-gradient(90deg, rgba(26, 17, 16, 0.7), rgba(74, 14, 23, 0.3) 55%, rgba(26, 17, 16, 0.62));
+  pointer-events: none;
+}
+
+.carousel img {
+  margin-top: 0;
+  filter: brightness(0.48) saturate(0.8) sepia(0.16) contrast(1.08);
+}
+
+.carousel-caption {
+  z-index: 2;
+  right: 12%;
+  bottom: 50%;
+  left: 12%;
+  padding: 1.15rem 1.5rem;
+  border: 1px solid rgba(176, 141, 117, 0.55);
+  border-radius: 2px;
+  background: rgba(26, 17, 16, 0.78);
+  color: var(--soft-light);
+  text-shadow: 0 2px 8px rgba(26, 17, 16, 0.9);
+  transform: translateY(50%);
+}
+
+.carousel-caption h2,
+.carousel-caption p {
+  color: var(--soft-light);
+}
+
+.carousel-caption h2 {
+  margin-bottom: 0.35rem;
+}
+
+.carousel-caption p {
+  font-weight: 500;
 }
 
 .carousel-control-prev,
