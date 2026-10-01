@@ -1,0 +1,24 @@
+{
+  "name": "fall2026startup",
+  "version": "1.0.0",
+  "description": "curtislingwall.click",
+  "main": "index.js",
+    "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cclingwall/FALL2026STARTUP.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cclingwall/FALL2026STARTUP/issues"
+  },
+  "homepage": "https://github.com/cclingwall/FALL2026STARTUP#readme",
+  "devDependencies": {
+    "vite": "^8.3.1"
+  }
+}

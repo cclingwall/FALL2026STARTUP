@@ -1,0 +1,64 @@
+/* Leaderboard image: frame the decorative page image. */
+.scores-page .img-zoom-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  margin-top: 1.5rem;
+}
+
+/* Personal stats: space each statistic for quick scanning. */
+.scores-page section ul {
+  display: grid;
+  gap: 0.8rem;
+  padding-left: 1.2rem;
+}
+
+/* Leaderboard table: support horizontal scrolling and readable data rows. */
+.scores-page table {
+  display: block;
+  width: 100%;
+  margin-top: 1.5rem;
+  overflow-x: auto;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.scores-page caption {
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.scores-page th,
+.scores-page td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(176, 141, 117, 0.24);
+  text-align: left;
+}
+
+.scores-page th {
+  color: var(--gold-light);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scores-page td {
+  color: var(--muted);
+}
+
+.scores-page tbody tr:hover {
+  background: rgba(176, 141, 117, 0.11);
+}
+
+/* Small-screen table: tighten cell spacing on narrow viewports. */
+@media (max-width: 575.98px) {
+  .scores-page th,
+  .scores-page td {
+    padding: 0.7rem;
+  }
+}

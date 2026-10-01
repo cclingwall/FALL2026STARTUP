@@ -1,0 +1,46 @@
+/* Game sections: separate mode controls and note-guess content. */
+.play-page .game-section {
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.play-page .game-section:first-of-type {
+  margin-top: 1.5rem;
+}
+
+.play-page .game-section > button {
+  margin: 0.25rem 0.35rem 0.25rem 0;
+}
+
+/* Note guess grid: keep piano choices aligned and responsive. */
+.play-page ul[aria-label='Piano note guesses'] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.play-page ul[aria-label='Piano note guesses'] button {
+  width: 100%;
+  min-height: 3.5rem;
+}
+
+/* Game feedback and activity: highlight results and space feed items. */
+.play-page [aria-live='polite'] {
+  margin-top: 1rem;
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.play-page aside ul {
+  display: grid;
+  gap: 0.8rem;
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 575.98px) {
+  .play-page ul[aria-label='Piano note guesses'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

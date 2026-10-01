@@ -1,0 +1,188 @@
+/* Home page carousel: image treatment, captions, and slide controls. */
+.home-page .carousel img {
+  margin-top: 0;
+  filter: brightness(0.48) saturate(0.8) sepia(0.16) contrast(1.08);
+}
+
+.home-page .carousel-item {
+  position: relative;
+  transition: transform 0.8s ease-in-out;
+}
+
+.home-page .carousel-item::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: '';
+  background: linear-gradient(90deg, rgba(26, 17, 16, 0.7), rgba(74, 14, 23, 0.3) 55%, rgba(26, 17, 16, 0.62));
+  pointer-events: none;
+}
+
+.home-page .carousel-caption {
+  z-index: 2;
+  right: 12%;
+  bottom: 50%;
+  left: 12%;
+  padding: 1.15rem 1.5rem;
+  border: 1px solid rgba(176, 141, 117, 0.55);
+  border-radius: 2px;
+  background: rgba(26, 17, 16, 0.78);
+  color: var(--soft-light);
+  text-shadow: 0 2px 8px rgba(26, 17, 16, 0.9);
+  transform: translateY(50%);
+}
+
+.home-page .carousel-caption h2,
+.home-page .carousel-caption p {
+  color: var(--soft-light);
+}
+
+.home-page .carousel-caption h2 {
+  margin-bottom: 0.35rem;
+}
+
+.home-page .carousel-caption p {
+  font-weight: 500;
+}
+
+.home-page .carousel-control-prev,
+.home-page .carousel-control-next {
+  top: 50%;
+  bottom: auto;
+  width: 3.5rem;
+  height: 5rem;
+  border: 1px solid rgba(176, 141, 117, 0.5);
+  border-radius: 2px;
+  background: rgba(74, 14, 23, 0.82);
+  opacity: 0.9;
+  transform: translateY(-50%);
+  transition: background 0.4s ease, border-color 0.4s ease, opacity 0.4s ease;
+}
+
+.home-page .carousel-control-prev {
+  left: 1rem;
+}
+
+.home-page .carousel-control-next {
+  right: 1rem;
+}
+
+.home-page .carousel-control-prev:hover,
+.home-page .carousel-control-prev:focus-visible,
+.home-page .carousel-control-next:hover,
+.home-page .carousel-control-next:focus-visible {
+  border-color: var(--soft-light);
+  background: rgba(176, 141, 117, 0.88);
+  opacity: 1;
+}
+
+.home-page .carousel-control-prev-icon,
+.home-page .carousel-control-next-icon {
+  filter: brightness(0) saturate(100%) invert(95%) sepia(7%) saturate(379%) hue-rotate(330deg) brightness(104%) contrast(93%);
+}
+
+/* Login form: labels, fields, focus feedback, and full-width action. */
+.home-page label {
+  display: block;
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.home-page input {
+  display: block;
+  width: 100%;
+  min-height: 2.8rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(176, 141, 117, 0.42);
+  border-radius: 2px;
+  outline: 0;
+  background: rgba(26, 17, 16, 0.9);
+  color: var(--text);
+  font: inherit;
+}
+
+.home-page input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(176, 141, 117, 0.26);
+}
+
+.home-page form button {
+  width: 100%;
+}
+
+.home-page form a {
+  align-self: center;
+  font-size: 0.8rem;
+}
+
+/* Bootstrap carousel overrides: preserve control alignment and appearance. */
+.home-page #heroCarousel .carousel-control-prev,
+.home-page #heroCarousel .carousel-control-next {
+  min-height: 0;
+  padding: 0;
+  border: 1px solid rgba(176, 141, 117, 0.5);
+  border-radius: 2px;
+  background: rgba(74, 14, 23, 0.82);
+  color: var(--soft-light);
+  transform: translateY(-50%);
+}
+
+.home-page #heroCarousel .carousel-control-prev:hover,
+.home-page #heroCarousel .carousel-control-prev:focus-visible,
+.home-page #heroCarousel .carousel-control-next:hover,
+.home-page #heroCarousel .carousel-control-next:focus-visible,
+.home-page #heroCarousel .carousel-control-prev:active,
+.home-page #heroCarousel .carousel-control-next:active {
+  border-color: var(--soft-light);
+  background: rgba(176, 141, 117, 0.88);
+  color: var(--primary-dark);
+  transform: translateY(-50%);
+}
+
+/* Entry overlay: prompt layout, keyboard focus, dismissal, and pulse motion. */
+.home-page #intro-overlay {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(26, 17, 16, 0.98);
+  color: var(--gold-light);
+  cursor: pointer;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.home-page #intro-overlay span {
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+.home-page #intro-overlay:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: -0.75rem;
+}
+
+.home-page #intro-overlay.is-dismissed {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
