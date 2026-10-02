@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "curtislingwall.click",
   "main": "index.js",
-    "scripts": {
+  "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
@@ -20,5 +20,12 @@
   "homepage": "https://github.com/cclingwall/FALL2026STARTUP#readme",
   "devDependencies": {
     "vite": "^8.3.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "react": "^19.3.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
   }
 }
