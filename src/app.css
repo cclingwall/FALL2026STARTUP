@@ -373,6 +373,32 @@ footer p {
   letter-spacing: 0.04em;
 }
 
+/* Intro overlay: block the page until the user chooses to begin. */
+#intro-overlay {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(26, 17, 16, 0.97);
+  color: var(--gold-light);
+  cursor: pointer;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+#intro-overlay span {
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+#intro-overlay:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: -0.75rem;
+}
+
 /* Shared motion: animate page entry and reduce motion when requested. */
 /* Move page content upward during the initial load for a composed entrance. */
 @keyframes glideUp {
@@ -383,6 +409,18 @@ footer p {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
   }
 }
 
