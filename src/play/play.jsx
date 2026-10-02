@@ -3,7 +3,7 @@ import './play.css';
 
 export function Play() {
   return (
-    <main className="container py-5">
+    <main className="play-page container py-5">
       <div className="row g-4">
         <section className="col-12 col-xl-8 luxury-panel" aria-labelledby="trainer-heading">
           <h2 id="trainer-heading">Ear Training Arena</h2>

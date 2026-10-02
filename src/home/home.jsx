@@ -4,7 +4,7 @@ import './home.css';
 
 export function Home() {
   return (
-    <main className="container py-5">
+    <main className="home-page container py-5">
       <div className="row g-4">
         {/* Hero Carousel */}
         <section

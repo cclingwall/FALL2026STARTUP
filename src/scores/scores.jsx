@@ -3,7 +3,7 @@ import './scores.css';
 
 export function Scores() {
   return (
-    <main className="container py-5">
+    <main className="scores-page container py-5">
       <div className="row g-4">
         {/* Leaderboard table */}
         <section className="col-12 col-xl-8 luxury-panel" aria-labelledby="leaderboard-heading">
