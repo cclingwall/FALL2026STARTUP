@@ -78,9 +78,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Rented EC2 server** - Not completed yet.
-- [ ] **Leased domain name** - Not completed yet.
-- [ ] **Server accessible** from my domain: [https://yourdomainnamehere.click](https://yourdomainnamehere.click) - Not completed yet.
+- [X] **Rented EC2 server**
+- [X] **Leased domain name** 
+- [X] **Server accessible** from my domain: [https://yourdomainnamehere.click](https://yourdomainnamehere.click) - Not completed yet.
 
 ## 🚀 HTML deliverable
 
