@@ -50,6 +50,15 @@
   gap: 20px;
 }
 
+.button-container > .btn {
+  padding: 0;
+  text-decoration: none;
+}
+
+.button-container > .btn:hover {
+  text-decoration: none;
+}
+
 .button-top-left {
   border-radius: 100% 0 0 0;
   margin: 20px 0 0 20px;
