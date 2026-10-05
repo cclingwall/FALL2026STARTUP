@@ -65,62 +65,62 @@ I am going to use the required technologies in the following ways.
 
 ## 🚀 Specification Deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
-- [x] I completed the prerequisites for this deliverable (Git commit requirement)
-- [x] Proper use of Markdown
-- [x] A concise and compelling elevator pitch
-- [x] Description of key features
-- [x] Description of how you will use each technology including your 3rd party API and use of WebSocket
-- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] I completed the prerequisites for this deliverable (Git commit requirement) - Project work is tracked in Git.
+- [x] Proper use of Markdown - Added headings, lists, links, images, and a Mermaid diagram.
+- [x] A concise and compelling elevator pitch - Introduced Pitch Royale with a short story.
+- [x] Description of key features - Listed the ear-training game, stats, leaderboard, trivia, and AI breakdown.
+- [x] Description of how you will use each technology including your 3rd party API and use of WebSocket - Explained planned use of HTML, CSS, React, services, MongoDB, and WebSockets.
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references. - Embedded two design sketches.
 
 ## 🚀 AWS deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
-- [X] **Rented EC2 server** - I did not complete this part of the deliverable.
-- [X] **Leased domain name** - I did not complete this part of the deliverable.
-- [X] **Server accessible** from my domain: [https://yourdomainnamehere.click](https://yourdomainnamehere.click) - I did not complete this part of the deliverable.
+- [ ] **Rented EC2 server** - Not completed yet.
+- [ ] **Leased domain name** - Not completed yet.
+- [ ] **Server accessible** from my domain: [https://yourdomainnamehere.click](https://yourdomainnamehere.click) - Not completed yet.
 
 ## 🚀 HTML deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
-- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [X] **HTML pages** 
-- [X] **Proper HTML element usage** 
-- [X] **Links** 
-- [X] **Text** 
-- [X] **3rd party API placeholder** 
-- [X] **Images** 
-- [X] **Login placeholder** 
-- [X] **DB data placeholder** 
-- [X] **WebSocket placeholder** 
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits) - Added the project GitHub link and committed the work.
+- [X] **HTML pages** - Built the home, game, and leaderboard views.
+- [X] **Proper HTML element usage** - Used semantic headers, sections, navigation, forms, tables, and buttons.
+- [X] **Links** - Added site navigation, account actions, and the project GitHub link.
+- [X] **Text** - Added game instructions, account labels, trivia, and leaderboard content.
+- [X] **3rd party API placeholder** - Added a space for the future daily-trivia API response.
+- [X] **Images** - Added design sketches and music-themed page imagery.
+- [X] **Login placeholder** - Added username and password fields with a login button.
+- [X] **DB data placeholder** - Added sample leaderboard and player-stat data.
+- [X] **WebSocket placeholder** - Added a sample live-activity feed.
 
 ## 🚀 CSS deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
-- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [X] **Visually appealing colors and layout. No overflowing elements.** - I did not complete this part of the deliverable.
-- [X] **Use of a CSS framework** - I did not complete this part of the deliverable.
-- [X] **All visual elements styled using CSS** - I did not complete this part of the deliverable.
-- [X] **Responsive to window resizing using flexbox and/or grid display** - I did not complete this part of the deliverable.
-- [X] **Use of a imported font** - I did not complete this part of the deliverable.
-- [X] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I did not complete this part of the deliverable.
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits) - Added the project GitHub link and committed the work.
+- [X] **Visually appealing colors and layout. No overflowing elements.** - Created a dark burgundy-and-gold theme with responsive page layouts.
+- [X] **Use of a CSS framework** - Imported Bootstrap for layout and components.
+- [X] **All visual elements styled using CSS** - Styled the header, navigation, panels, forms, game controls, and tables.
+- [X] **Responsive to window resizing using flexbox and/or grid display** - Used Bootstrap's responsive grid plus flexbox and CSS grid.
+- [X] **Use of a imported font** - Loaded Great Vibes, Montserrat, and Playfair Display from Google Fonts.
+- [X] **Use of different types of selectors including element, class, ID, and pseudo selectors** - Used element, class, ID, hover, and focus selectors.
 
 ## 🚀 React part 1: Routing deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Bundled using Vite** - I did not complete this part of the deliverable.
-- [ ] **Components** - I did not complete this part of the deliverable.
-- [ ] **Router** - I did not complete this part of the deliverable.
+- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits) - Simon deployment still needs confirmation.
+- [X] **Bundled using Vite** - Added Vite dev and build scripts.
+- [X] **Components** - Split the app into home, play, and scores React components.
+- [X] **Router** - Added routes for home, play, scores, and a not-found page.
 
 ## 🚀 React part 2: Reactivity deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
@@ -128,7 +128,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ## 🚀 Service deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
@@ -141,7 +141,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ## 🚀 DB deliverable
 
-For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
+Completed items are checked and briefly described below.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
