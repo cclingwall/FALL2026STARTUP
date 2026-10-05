@@ -102,21 +102,21 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [X] **Visually appealing colors and layout. No overflowing elements.** - I did not complete this part of the deliverable.
-- [X] **Use of a CSS framework** - I did not complete this part of the deliverable.
-- [X] **All visual elements styled using CSS** - I did not complete this part of the deliverable.
-- [X] **Responsive to window resizing using flexbox and/or grid display** - I did not complete this part of the deliverable.
-- [X] **Use of a imported font** - I did not complete this part of the deliverable.
-- [X] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I did not complete this part of the deliverable.
+- [X] **Visually appealing colors and layout. No overflowing elements.**
+- [X] **Use of a CSS framework** 
+- [X] **All visual elements styled using CSS** 
+- [X] **Responsive to window resizing using flexbox and/or grid display** 
+- [X] **Use of a imported font**
+- [X] **Use of different types of selectors including element, class, ID, and pseudo selectors**
 
 ## 🚀 React part 1: Routing deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Bundled using Vite** - I did not complete this part of the deliverable.
-- [ ] **Components** - I did not complete this part of the deliverable.
-- [ ] **Router** - I did not complete this part of the deliverable.
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [X] **Bundled using Vite** 
+- [X] **Components** 
+- [X] **Router**
 
 ## 🚀 React part 2: Reactivity deliverable
 
