@@ -65,7 +65,7 @@ I am going to use the required technologies in the following ways.
 
 ## 🚀 Specification Deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] I completed the prerequisites for this deliverable (Git commit requirement) - Project work is tracked in Git.
 - [x] Proper use of Markdown - Added headings, lists, links, images, and a Mermaid diagram.
@@ -76,7 +76,7 @@ Completed items are checked and briefly described below.
 
 ## 🚀 AWS deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [ ] **Rented EC2 server** - Not completed yet.
 - [ ] **Leased domain name** - Not completed yet.
@@ -84,7 +84,7 @@ Completed items are checked and briefly described below.
 
 ## 🚀 HTML deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits) - Added the project GitHub link and committed the work.
 - [X] **HTML pages** - Built the home, game, and leaderboard views.
@@ -99,7 +99,7 @@ Completed items are checked and briefly described below.
 
 ## 🚀 CSS deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits) - Added the project GitHub link and committed the work.
 - [X] **Visually appealing colors and layout. No overflowing elements.** - Created a dark burgundy-and-gold theme with responsive page layouts.
@@ -111,24 +111,24 @@ Completed items are checked and briefly described below.
 
 ## 🚀 React part 1: Routing deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits) - Simon deployment still needs confirmation.
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits) - Simon deployment still needs confirmation.
 - [X] **Bundled using Vite** - Added Vite dev and build scripts.
 - [X] **Components** - Split the app into home, play, and scores React components.
 - [X] **Router** - Added routes for home, play, scores, and a not-found page.
 
 ## 🚀 React part 2: Reactivity deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [ ] **Hooks** - I sdid not complete this part of the deliverable.
 
 ## 🚀 Service deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
@@ -141,7 +141,7 @@ Completed items are checked and briefly described below.
 
 ## 🚀 DB deliverable
 
-Completed items are checked and briefly described below.
+For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
 - [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
