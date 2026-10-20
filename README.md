@@ -39,7 +39,7 @@ sequenceDiagram
     Player->>Play: Selects a piano key guess
     Play->>Storage: Saves attempt and aggregated stats
     Play-->>Player: Shows answer feedback and streak
-    Play->>Feed: Adds local milestones; rotates mock peer events
+    Play->>Feed: Adds local milestones and rotates mock peer events
     Player->>Scores: Opens leaderboard and personal stats
     Scores->>Storage: Loads saved telemetry and leaderboard
     Player->>Scores: Requests AI Coach analysis
@@ -70,7 +70,6 @@ The project currently uses the technologies below as follows; planned backend in
 - **DB/Login (prototype)** - The username and game data are stored locally in the browser. MongoDB and secure server-backed authentication are future work.
 - **WebSocket (mocked)** - The Play page simulates peer activity and displays local-player milestones. There is no WebSocket server or connection yet.
 
-why
 
 ## 🚀 Specification Deliverable
 
