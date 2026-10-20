@@ -248,6 +248,23 @@
   padding-left: 1.2rem;
 }
 
+.play-page .activity-caption {
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.play-page .live-activity li {
+  padding: 0.55rem 0.65rem;
+  border-left: 2px solid var(--line);
+  background: rgba(26, 17, 16, 0.18);
+  font-size: 0.82rem;
+}
+
+.play-page .live-activity .activity-you {
+  border-left-color: var(--gold-light);
+  color: var(--soft-light);
+}
+
 @media (max-width: 380px) {
   .play-page.container {
     padding-right: 0.5rem;

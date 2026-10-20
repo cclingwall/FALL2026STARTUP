@@ -154,6 +154,7 @@ export function useGameSession(userName) {
     setHardMode,
     currentStreak,
     attemptCount: attemptEvents.length,
+    attemptEvents,
     flashingKey,
     feedback,
     handlePlayChallenge,

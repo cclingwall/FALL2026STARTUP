@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PianoKeyboard } from './PianoKeyboard.jsx';
 import { useGameSession } from './useGameSession.js';
 import './play.css';
@@ -10,6 +10,7 @@ export function Play({ userName }) {
     setHardMode,
     currentStreak,
     attemptCount,
+    attemptEvents,
     flashingKey,
     feedback,
     handlePlayChallenge,
@@ -17,6 +18,58 @@ export function Play({ userName }) {
     handlePlayReference,
     handleGameModeChange
   } = useGameSession(userName);
+  const [liveActivity, setLiveActivity] = useState([
+    { id: 'seed-sarah', message: 'Sarah just nailed a tritone (Gb5) in 0.8s!', type: 'peer' },
+    { id: 'seed-ben', message: 'Ben hit a 15-note streak in Hard Mode!', type: 'peer' },
+    { id: 'seed-jordan', message: 'Jordan reached a new personal best!', type: 'peer' }
+  ]);
+
+  // Add an occasional peer message to simulate a live activity stream.
+  useEffect(() => {
+    const peerMessages = [
+      'Sarah just nailed a tritone (Gb5) in 0.8s!',
+      'Ben hit a 15-note streak in Hard Mode!',
+      'Jordan reached a new personal best!',
+      'Maya just completed a chord challenge!',
+      'Leo is practicing the upper octave.'
+    ];
+    const intervalId = window.setInterval(() => {
+      const message = peerMessages[Math.floor(Math.random() * peerMessages.length)];
+      setLiveActivity((events) => [
+        { id: `${Date.now()}-${Math.random()}`, message, type: 'peer' },
+        ...events
+      ].slice(0, 6));
+    }, 20000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  // Turn fast and streak-setting attempts into immediate local activity events.
+  useEffect(() => {
+    const attempt = attemptEvents[attemptEvents.length - 1];
+    if (!attempt || !attempt.isCorrect) {
+      return;
+    }
+
+    const messages = [];
+    if (attempt.responseTimeMs < 1200) {
+      messages.push(`⚡ You identified ${attempt.targetNote}${attempt.targetOctave} in under 1.2 seconds!`);
+    }
+    if (attempt.streakAtAttempt + 1 === 5) {
+      messages.push('You just reached a 5-note streak!');
+    }
+
+    if (messages.length > 0) {
+      setLiveActivity((events) => [
+        ...messages.map((message) => ({
+          id: `${Date.now()}-${Math.random()}`,
+          message,
+          type: 'you'
+        })),
+        ...events
+      ].slice(0, 6));
+    }
+  }, [attemptEvents]);
 
   return (
     <main className="play-page container py-5">
@@ -88,13 +141,16 @@ export function Play({ userName }) {
           </section>
         </section>
 
-        {/* WebSocket placeholder: live activity feed */}
+        {/* Simulated activity feed until a live service is connected. */}
         <aside className="col-12 col-xl-4 luxury-panel" aria-labelledby="activity-heading">
           <h2 id="activity-heading">Live Activity Feed</h2>
-          <ul>
-            <li>&quot;Sarah just hit a 5-note streak!&quot;</li>
-            <li>&quot;Ben connected&quot;</li>
-            <li>&quot;Jordan reached a new personal best!&quot;</li>
+          <p className="activity-caption">Simulated player updates and your milestones</p>
+          <ul className="live-activity" aria-live="polite">
+            {liveActivity.map((event) => (
+              <li className={`activity-${event.type}`} key={event.id}>
+                {event.message}
+              </li>
+            ))}
           </ul>
         </aside>
       </div>
