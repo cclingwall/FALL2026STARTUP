@@ -14,6 +14,27 @@
   padding-left: 1.2rem;
 }
 
+.scores-page .stats-breakdown {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.9rem;
+}
+
+.scores-page .stats-breakdown summary {
+  color: var(--gold-light);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.scores-page .stats-breakdown h3 {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.scores-page .stats-breakdown li {
+  font-size: 0.8rem;
+}
+
 /* Leaderboard table: support horizontal scrolling and readable data rows. */
 .scores-page table {
   display: block;

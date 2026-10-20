@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { noteFrequencies, playChord, playNote, playReferenceC } from './sound.js';
+import { saveAttemptEvent } from '../utils/telemetryStorage.js';
 import './play.css';
 
 const semitoneMap = {
@@ -35,7 +36,7 @@ function splitTargetNote(noteName) {
   return { note: match[1], octave: Number(match[2]) };
 }
 
-export function Play() {
+export function Play({ userName }) {
   const [gameMode, setGameMode] = useState('single');
   const [hardMode, setHardMode] = useState(false);
   const [targetNote, setTargetNote] = useState(null);
@@ -101,6 +102,12 @@ export function Play() {
     const responseSeconds = (responseTimeMs / 1000).toFixed(1);
 
     setAttemptEvents((events) => [...events, attemptEvent]);
+    let telemetryError = '';
+    try {
+      saveAttemptEvent(userName, attemptEvent);
+    } catch (error) {
+      telemetryError = ` Could not save telemetry: ${error.message}`;
+    }
     setCurrentStreak(nextStreak);
     setFlashingKey({ note: guessedNote, result: isCorrect ? 'key-correct' : 'key-wrong' });
     window.clearTimeout(keyFlashTimeout.current);
@@ -109,11 +116,10 @@ export function Play() {
     toneStartTime.current = null;
     referenceUsed.current = false;
 
-    setFeedback(
-      isCorrect
-        ? `Correct! ${targetLabel} identified in ${responseSeconds}s (+1 Streak).`
-        : `Not quite. It was ${targetLabel}; your response took ${responseSeconds}s.`
-    );
+    const resultMessage = isCorrect
+      ? `Correct! ${targetLabel} identified in ${responseSeconds}s (+1 Streak).`
+      : `Not quite. It was ${targetLabel}; your response took ${responseSeconds}s.`;
+    setFeedback(`${resultMessage}${telemetryError}`);
 
     try {
       await playNote(`${guessedNote}${targetNote.octave}`);

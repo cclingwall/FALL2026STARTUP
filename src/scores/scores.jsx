@@ -1,7 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getLeaderboardScores, getTelemetryProfile } from '../utils/telemetryStorage.js';
 import './scores.css';
 
-export function Scores() {
+function getAccuracy(correct, total) {
+  return total === 0 ? '—' : `${Math.round((correct / total) * 100)}%`;
+}
+
+export function Scores({ userName }) {
+  const displayName = userName || 'Guest';
+  const [profile, setProfile] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [storageError, setStorageError] = useState('');
+
+  useEffect(() => {
+    try {
+      setProfile(getTelemetryProfile(displayName));
+      setLeaderboard(getLeaderboardScores());
+      setStorageError('');
+    } catch (error) {
+      setStorageError(`Could not load saved stats: ${error.message}`);
+    }
+  }, [displayName]);
+
   return (
     <main className="scores-page container py-5">
       <div className="row g-4">
@@ -33,43 +53,57 @@ export function Scores() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Sarah</td>
-                <td>24</td>
-                <td><time dateTime="2026-09-14">2026-09-14</time></td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Alex</td>
-                <td>18</td>
-                <td><time dateTime="2026-09-14">2026-09-14</time></td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Ben</td>
-                <td>15</td>
-                <td><time dateTime="2026-09-13">2026-09-13</time></td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Jordan</td>
-                <td>12</td>
-                <td><time dateTime="2026-09-12">2026-09-12</time></td>
-              </tr>
+              {leaderboard.map((score, index) => (
+                <tr key={score.name}>
+                  <td>{index + 1}</td>
+                  <td>{score.name}</td>
+                  <td>{score.highestStreak}</td>
+                  <td><time dateTime={score.dateRecorded}>{score.dateRecorded}</time></td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </section>
 
         {/* Personal stats summary */}
         <section className="col-12 col-xl-4 luxury-panel" aria-labelledby="personal-stats-heading">
-          <h2 id="personal-stats-heading">Alex&apos;s Personal Stats</h2>
-          <ul>
-            <li>Personal best streak: 18 notes</li>
-            <li>Best single-note score: 92%</li>
-            <li>Best chord score: 78%</li>
-            <li>Total games played: 34</li>
-          </ul>
+          <h2 id="personal-stats-heading">{displayName}&apos;s Personal Stats</h2>
+          {storageError && <p role="alert">{storageError}</p>}
+          {profile && (
+            <>
+              <ul>
+                <li>Best streak: {profile.bestStreak}</li>
+                <li>Single-note accuracy: {getAccuracy(profile.singleCorrect, profile.singleTotal)}</li>
+                <li>Chord accuracy: {getAccuracy(profile.chordCorrect, profile.chordTotal)}</li>
+                <li>Games played: {profile.gamesPlayed}</li>
+                <li>Average response: {profile.avgResponseTimeMs} ms</li>
+                <li>
+                  Fastest correct response:{' '}
+                  {profile.fastestCorrectMs === null ? '—' : `${profile.fastestCorrectMs} ms`}
+                </li>
+              </ul>
+              <details className="stats-breakdown">
+                <summary>Note and octave breakdown</summary>
+                <h3>Pitch classes</h3>
+                <ul>
+                  {Object.entries(profile.noteStats).map(([note, stats]) => (
+                    <li key={note}>
+                      {note}: {stats.correct}/{stats.attempts} correct, avg {stats.avgTimeMs} ms
+                      {stats.commonMistake ? `, often guessed as ${stats.commonMistake}` : ''}
+                    </li>
+                  ))}
+                </ul>
+                <h3>Octaves</h3>
+                <ul>
+                  {Object.entries(profile.octaveStats).map(([octave, stats]) => (
+                    <li key={octave}>
+                      Octave {octave}: {stats.correct}/{stats.attempts} correct ({stats.accuracy}%)
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </>
+          )}
         </section>
       </div>
     </main>
