@@ -26,42 +26,50 @@ Want to take it back? Try Pitch Royale.
 
 ```mermaid
 sequenceDiagram
-    actor You
-    participant Website
-    participant Server
-    participant OtherPlayers
+    actor Player
+    participant Play as Play page
+    participant Audio as Web Audio API
+    participant Storage as Browser localStorage
+    participant Feed as Simulated activity feed
+    participant Scores as Scores page / mock AI Coach
 
-    You->>Website: Clicks "Play Sound"
-    Website->>You: Plays a note (e.g., D flat)
-    You->>Website: Clicks the "Db" key
-    Website->>You: Shows green flash (+1 Streak)
-    Website->>Server: Sends score update (Streak: 5)
-    Server->>Server: Saves new score to Database
-    Server-->>OtherPlayers: Broadcasts "You reached a 5-note streak!"
+    Player->>Play: Starts a note or chord challenge
+    Play->>Audio: Plays randomized pitch from C3-B5
+    Audio-->>Player: Plays the challenge
+    Player->>Play: Selects a piano key guess
+    Play->>Storage: Saves attempt and aggregated stats
+    Play-->>Player: Shows answer feedback and streak
+    Play->>Feed: Adds local milestones; rotates mock peer events
+    Player->>Scores: Opens leaderboard and personal stats
+    Scores->>Storage: Loads saved telemetry and leaderboard
+    Player->>Scores: Requests AI Coach analysis
+    Scores-->>Player: Shows tailored mock coaching insight
 ```
 
 ### Key features
 
-Piano & Sound Player - Plays a randomized musical note (Play notes from browser), The user interacts by clicking a piano key to guess what note it was.
+Piano & Sound Player - Plays randomized single notes or chords across three octaves. The user guesses with an interactive piano keyboard.
 
-Stats & Streak Tracking - Tracks current winning streak, highest score, and overall guess accuracy over time. Stored for each user. Secure login over HTTPS.
+Stats & Streak Tracking - Tracks streaks, accuracy, reaction times, pitch-class mistakes, and octave accuracy in browser localStorage per username. The current account flow is a local prototype, not secure server-backed authentication.
 
-Leaderboard & Notifications - Shows a ranked list of top players, with pop-ups when someone hits a high streak.
+Leaderboard & Notifications - Shows locally saved high streaks. A simulated activity feed mixes sample peer updates with the current player's milestones; it is not connected to a WebSocket server.
 
-Daily Music Trivia - A fun fact box on the screen that pulls in a music fact or tip from another website each day.
+Daily Music Trivia - Displays curated music facts locally; no external trivia service is currently connected.
 
-AI Breakdown - An AI Breakdown of a user's progress and tips to improve.
+AI Breakdown - A mocked AI Ear-Training Coach generates practice advice from the player's locally saved telemetry; it does not call an LLM service.
 
 ### Technologies
 
-I am going to use the required technologies in the following ways.
+The project currently uses the technologies below as follows; planned backend integrations are identified as future work.
 
 - **HTML** - HTML for the piano keys, control buttons, score displays, and navigation in the menu.
-- **CSS** - Styles the app with a dark theme, animates key presses, and adjusts the layout to both mobile and computer screens.
-- **React** - React for user interaction, game state (current streak, played notes, game mode), and sound playback using browser audio.
-- **Service** - Service will handle score submissions, user authentication, and call a free, third-party music API to fetch daily trivia. Link to potential API (https://opentdb.com/api_config.php)
-- **DB/Login** - Registers and logs in users, and saves player stats and high scores in MongoDB.
-- **WebSocket** - Broadcasts events between players, such as live score updates and pop-up notifications when someone achieves a high streak. 
+- **CSS** - Styles the app with a dark theme, piano-key feedback states, and responsive layouts for mobile and desktop.
+- **React** - React components and hooks power the interactive pages, game state, and user interface updates.
+- **Web Audio API** - A browser oscillator synthesizer plays single notes, major/minor chords, and reference C4 across a three-octave C3-B5 range.
+- **Service (future work)** - A backend service could handle score submissions, account authentication, and third-party music trivia requests. No service endpoint is currently connected.
+- **DB/Login (prototype)** - The username and game data are stored locally in the browser. MongoDB and secure server-backed authentication are future work.
+- **WebSocket (mocked)** - The Play page simulates peer activity and displays local-player milestones. There is no WebSocket server or connection yet.
+
 
 ## 🚀 Specification Deliverable
 
@@ -122,9 +130,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I sdid not complete this part of the deliverable.
+- [x] I completed the project prerequisites (project URL and GitHub repository are listed; work is tracked in Git).
+- [x] **All functionality implemented or mocked out** - Interactive pages, game controls, local telemetry, simulated live activity, and mock AI coaching are implemented.
+- [x] **Hooks** - Used `useState`, `useEffect`, and a custom `useGameSession` hook for reactive UI and game behavior.
 
 ## 🚀 Service deliverable
 

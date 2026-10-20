@@ -41,6 +41,7 @@
   margin-top: 1.25rem;
   border-top: 1px solid var(--line);
   padding-top: 1rem;
+  border-radius: 0 0 2px 2px;
 }
 
 .scores-page .ai-coach h3 {
@@ -62,9 +63,22 @@
 }
 
 .scores-page .coach-insight {
-  border-left: 2px solid var(--gold-light);
+  margin: 0;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold-light);
+  border-radius: 2px;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(120deg, rgba(26, 17, 16, 0.42), rgba(26, 17, 16, 0.16));
+  color: var(--soft-light);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.scores-page .ai-coach [role='alert'] {
+  border-left: 3px solid #ff9b9b;
   padding: 0.6rem 0.75rem;
-  background: rgba(26, 17, 16, 0.18);
+  color: var(--soft-light);
 }
 
 /* Leaderboard table: support horizontal scrolling and readable data rows. */

@@ -117,11 +117,13 @@
   flex: 1 1 0;
   height: 100%;
   padding: 0.5rem 0.15rem;
-  border: 1px solid #927758;
+  border: 1px solid #b8aa95;
   border-right-width: 0;
-  background: linear-gradient(90deg, #fffdf6, #e7dfd0);
+  background: linear-gradient(90deg, #fffefa 0%, #f4f0e7 72%, #ded6c7 100%);
   color: var(--primary-dark);
-  box-shadow: inset 0 -0.45rem 0.55rem rgba(26, 17, 16, 0.14);
+  box-shadow:
+    inset 0 0.15rem 0.2rem rgba(255, 255, 255, 0.9),
+    inset 0 -0.45rem 0.55rem rgba(26, 17, 16, 0.14);
 }
 
 .play-page .natural-keys .natural-key:last-child {
@@ -129,12 +131,17 @@
 }
 
 .play-page .natural-keys .natural-key:hover {
-  background: linear-gradient(90deg, #fffdf6, #e7dfd0);
+  background: linear-gradient(90deg, #fffefa 0%, #f4f0e7 72%, #ded6c7 100%);
   color: var(--primary-dark);
 }
 
+.play-page .natural-keys .natural-key:active {
+  background: linear-gradient(90deg, #eee8dc, #d8cdbc);
+  box-shadow: inset 0 0.35rem 0.6rem rgba(26, 17, 16, 0.2);
+}
+
 .play-page .natural-keys .natural-key:focus-visible {
-  z-index: 3;
+  z-index: 1;
   outline: 2px solid var(--gold);
   outline-offset: -3px;
 }
@@ -146,9 +153,9 @@
   width: clamp(2rem, 9%, 3.75rem);
   height: 62%;
   padding: 0.45rem 0.1rem;
-  border: 1px solid var(--gold);
+  border: 1px solid #8c6c52;
   border-radius: 0 0 0.3rem 0.3rem;
-  background: linear-gradient(90deg, #30221f, #1a1110 35%, #0e0908);
+  background: linear-gradient(90deg, #30221f 0%, #1a1110 35%, #0e0908 100%);
   color: var(--gold-light);
   box-shadow: 0 0.35rem 0.5rem rgba(0, 0, 0, 0.55);
   transform: translateX(-50%);
@@ -164,7 +171,7 @@
   border-color: #8ee0a1;
   background: #236b3b;
   color: #fff;
-  box-shadow: 0 0 1rem rgba(142, 224, 161, 0.55);
+  box-shadow: 0 0 1rem rgba(142, 224, 161, 0.55), inset 0 0 0.4rem rgba(255, 255, 255, 0.2);
 }
 
 .play-page .piano-keyboard .key-correct:hover,
@@ -178,7 +185,7 @@
   border-color: #ff9b9b;
   background: #8a2932;
   color: #fff;
-  box-shadow: 0 0 1rem rgba(255, 155, 155, 0.45);
+  box-shadow: 0 0 1rem rgba(255, 155, 155, 0.45), inset 0 0 0.4rem rgba(255, 255, 255, 0.16);
 }
 
 .play-page .piano-keyboard .key-wrong:hover,
@@ -214,12 +221,19 @@
   white-space: nowrap;
 }
 
+.play-page .game-feedback .current-streak {
+  margin: 0;
+}
+
 .play-page .game-feedback {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
   margin-top: 1rem;
+  padding: 0.7rem 0.85rem;
+  border-left: 2px solid var(--gold);
+  background: rgba(26, 17, 16, 0.22);
 }
 
 .play-page .game-feedback p {
