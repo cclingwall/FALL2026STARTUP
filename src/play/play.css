@@ -12,64 +12,79 @@
   margin: 0.25rem 0.35rem 0.25rem 0;
 }
 
-.play-page .game-mode-toggle {
+.play-page .control-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+}
+
+.play-page .mode-selector {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(6rem, 1fr));
+  width: max-content;
+  max-width: 100%;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--primary-dark);
+}
+
+.play-page .mode-selector button {
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.75rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+.play-page .mode-selector button:hover,
+.play-page .mode-selector button:focus-visible {
+  background: rgba(176, 141, 117, 0.16);
+  color: var(--soft-light);
+  transform: none;
+}
+
+.play-page .mode-selector button.is-selected {
+  border-color: var(--gold);
+  background: var(--secondary-dark);
+  color: var(--soft-light);
+}
+
+.play-page .mode-selector button.is-selected:hover,
+.play-page .mode-selector button.is-selected:focus-visible {
+  background: var(--secondary-dark);
+  color: var(--soft-light);
+}
+
+.play-page .play-actions {
+  display: inline-flex;
+  gap: 0.45rem;
+}
+
+.play-page .play-actions button {
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0.55rem 0.8rem;
+}
+
+.play-page .hard-mode-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  margin: 0.25rem 1rem 0.25rem 0;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  margin: 0;
   color: var(--text);
   font-size: 0.75rem;
-  font-weight: 600;
+  white-space: nowrap;
 }
 
-.play-page .mode-switch {
-  position: relative;
-  display: inline-flex;
-  width: 3rem;
-  height: 1.65rem;
-  cursor: pointer;
-}
-
-.play-page .mode-switch input {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+.play-page .hard-mode-toggle input {
+  width: 1rem;
+  height: 1rem;
   margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.play-page .mode-switch-track {
-  width: 100%;
-  border: 1px solid var(--gold);
-  border-radius: 1rem;
-  background: var(--primary-dark);
-  transition: background 0.2s ease;
-}
-
-.play-page .mode-switch-track::after {
-  position: absolute;
-  top: 0.2rem;
-  left: 0.2rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: 50%;
-  background: var(--gold-light);
-  content: '';
-  transition: transform 0.2s ease;
-}
-
-.play-page .mode-switch input:checked + .mode-switch-track {
-  background: var(--secondary-dark);
-}
-
-.play-page .mode-switch input:checked + .mode-switch-track::after {
-  transform: translateX(1.35rem);
-}
-
-.play-page .mode-switch input:focus-visible + .mode-switch-track {
-  outline: 2px solid var(--soft-light);
-  outline-offset: 3px;
+  accent-color: var(--gold);
 }
 
 /* Arrange the white keys in one octave and layer black keys at each gap. */
@@ -182,23 +197,9 @@
   opacity: 0.55;
 }
 
-.play-page .hard-mode-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0.75rem;
-  color: var(--text);
-}
-
-.play-page .hard-mode-toggle input {
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--gold);
-}
-
 .play-page .hard-mode-badge {
   display: inline-block;
-  margin: 0.25rem 0.5rem;
+  margin-top: 0.5rem;
   padding: 0.15rem 0.5rem;
   border: 1px solid var(--line);
   color: var(--muted);
@@ -206,9 +207,32 @@
 }
 
 .play-page .current-streak {
-  margin-top: 0.75rem;
+  flex: 0 0 auto;
   color: var(--gold-light);
+  font-size: 0.8rem;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.play-page .game-feedback {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.play-page .game-feedback p {
+  min-width: 0;
+}
+
+.play-page .game-feedback [aria-live='polite'] {
+  margin-top: 0;
+}
+
+.play-page .attempt-count {
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
 }
 
 /* Game feedback and activity: highlight results and space feed items. */
@@ -225,12 +249,94 @@
 }
 
 @media (max-width: 380px) {
+  .play-page.container {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .play-page .luxury-panel {
+    padding: 1rem;
+  }
+
+  .play-page .control-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.6rem;
+  }
+
+  .play-page .mode-selector {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .play-page .play-actions {
+    display: contents;
+  }
+
+  .play-page .play-actions button {
+    min-height: 2.75rem;
+    padding: 0.45rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+  }
+
+  .play-page .play-actions button:first-child {
+    grid-column: 1;
+  }
+
+  .play-page .play-actions button:last-child {
+    grid-column: 2;
+  }
+
+  .play-page .hard-mode-toggle {
+    grid-column: 1 / -1;
+    min-height: 2rem;
+  }
+
+  .play-page .game-feedback {
+    align-items: flex-start;
+  }
+
+  .play-page .current-streak {
+    font-size: 0.7rem;
+  }
+
   .play-page .piano-keyboard {
     height: 10rem;
   }
 
   .play-page .piano-keyboard > .sharp-flat-key {
-    width: 8%;
+    width: 11%;
     font-size: 0.6rem;
+  }
+}
+
+@media (min-width: 381px) and (max-width: 575.98px) {
+  .play-page .control-toolbar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+  }
+
+  .play-page .mode-selector {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .play-page .mode-selector button {
+    min-width: 6rem;
+  }
+
+  .play-page .play-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column: 1 / -1;
+  }
+
+  .play-page .play-actions button {
+    min-height: 2.75rem;
+  }
+
+  .play-page .hard-mode-toggle {
+    grid-column: 1 / -1;
   }
 }

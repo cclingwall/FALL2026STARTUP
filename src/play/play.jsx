@@ -140,8 +140,7 @@ export function Play() {
   };
 
   // Switching modes clears the previous challenge so it cannot be answered in the new mode.
-  const handleGameModeChange = (event) => {
-    const nextMode = event.target.checked ? 'chords' : 'single';
+  const handleGameModeChange = (nextMode) => {
     setGameMode(nextMode);
     setTargetNote(null);
     toneStartTime.current = null;
@@ -162,49 +161,53 @@ export function Play() {
           {/* Game mode and tone playback controls */}
           <section className="game-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading">Game Controls</h3>
-            <div className="game-mode-toggle">
-              <span>Single Notes</span>
-              <label className="mode-switch">
+            <div className="control-toolbar">
+              <div className="mode-selector" role="group" aria-label="Game mode">
+                <button
+                  type="button"
+                  className={gameMode === 'single' ? 'is-selected' : ''}
+                  aria-pressed={gameMode === 'single'}
+                  onClick={() => handleGameModeChange('single')}
+                >
+                  Single
+                </button>
+                <button
+                  type="button"
+                  className={gameMode === 'chords' ? 'is-selected' : ''}
+                  aria-pressed={gameMode === 'chords'}
+                  onClick={() => handleGameModeChange('chords')}
+                >
+                  Chords
+                </button>
+              </div>
+              <div className="play-actions">
+                <button type="button" onClick={handlePlayChallenge}>
+                  Play {gameMode === 'chords' ? 'Chord' : 'Note'}
+                </button>
+                <button
+                  className="reference-pitch"
+                  type="button"
+                  onClick={handlePlayReference}
+                  disabled={hardMode}
+                  title={hardMode ? 'Reference Pitch Disabled in Hard Mode' : 'Play C4 at 261.63 Hz'}
+                >
+                  Play Reference C4
+                </button>
+              </div>
+              <label className="hard-mode-toggle">
                 <input
                   type="checkbox"
-                  role="switch"
-                  aria-label="Chord mode"
-                  checked={gameMode === 'chords'}
-                  onChange={handleGameModeChange}
+                  checked={hardMode}
+                  onChange={(event) => setHardMode(event.target.checked)}
                 />
-                <span className="mode-switch-track" aria-hidden="true" />
+                Hard Mode
               </label>
-              <span>Chords</span>
             </div>
-            <button type="button" onClick={handlePlayChallenge}>
-              Play {gameMode === 'chords' ? 'Chord' : 'Tone'}
-            </button>
-            <button
-              className="reference-pitch"
-              type="button"
-              onClick={handlePlayReference}
-              disabled={hardMode}
-              title={hardMode ? 'Reference Pitch Disabled in Hard Mode' : 'Play C4 at 261.63 Hz'}
-            >
-              Play Reference C4
-            </button>
             {hardMode && (
               <span className="hard-mode-badge" role="status">
-                Reference Pitch Disabled in Hard Mode
+                Reference pitch disabled
               </span>
             )}
-            <label className="hard-mode-toggle">
-              <input
-                type="checkbox"
-                checked={hardMode}
-                onChange={(event) => setHardMode(event.target.checked)}
-              />
-              Hard Mode (Perfect Pitch)
-            </label>
-            <p className="current-streak" aria-live="polite">
-              Current streak: {currentStreak}
-            </p>
-            <p className="attempt-count">Attempts recorded this session: {attemptEvents.length}</p>
           </section>
 
           {/* Piano-note guess buttons and result feedback area */}
@@ -245,7 +248,11 @@ export function Play() {
                 </button>
               ))}
             </div>
-            <p aria-live="polite">{feedback}</p>
+            <div className="game-feedback">
+              <p aria-live="polite">{feedback}</p>
+              <span className="current-streak" aria-live="polite">Streak: {currentStreak}</span>
+            </div>
+            <p className="attempt-count">Attempts this session: {attemptEvents.length}</p>
           </section>
         </section>
 
