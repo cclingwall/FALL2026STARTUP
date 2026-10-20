@@ -9,7 +9,30 @@ import { Scores } from './scores/scores.jsx';
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [introDismissed, setIntroDismissed] = useState(false);
+  // Remember the overlay dismissal for this tab, including after refreshes.
+  const [introDismissed, setIntroDismissed] = useState(
+    () => sessionStorage.getItem('introDismissed') === 'true'
+  );
+  // Load the saved username once so every page starts with the same user.
+  const [userName, setUserName] = useState(() => localStorage.getItem('userName'));
+
+  // Hide the intro and save that choice for the rest of this tab's session.
+  const dismissIntro = () => {
+    sessionStorage.setItem('introDismissed', 'true');
+    setIntroDismissed(true);
+  };
+
+  // Update the shared name and keep it saved across browser sessions.
+  const handleAuthChange = (name) => {
+    const normalizedName = name.trim();
+    setUserName(normalizedName);
+
+    if (normalizedName) {
+      localStorage.setItem('userName', normalizedName);
+    } else {
+      localStorage.removeItem('userName');
+    }
+  };
 
   // Close sidebar on Escape key
   useEffect(() => {
@@ -33,11 +56,11 @@ export default function App() {
           role="button"
           tabIndex={0}
           aria-label="Click anywhere to begin"
-          onClick={() => setIntroDismissed(true)}
+          onClick={dismissIntro}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              setIntroDismissed(true);
+              dismissIntro();
             }
           }}
         >
@@ -61,8 +84,11 @@ export default function App() {
           <NavLink to="/" onClick={closeSidebar}>Pitch Royale</NavLink>
         </h1>
         <div className="user-status">
-          <span>Logged in as:</span>
-          <span className="user-avatar" aria-hidden="true"></span>
+          <span>Logged in as: {userName || 'Guest'}</span>
+          {/* Use the user's first letter as the avatar label. */}
+          <span className="user-avatar" aria-hidden="true">
+            {(userName || 'Guest').charAt(0).toUpperCase()}
+          </span>
         </div>
       </header>
 
@@ -106,10 +132,20 @@ export default function App() {
       />
 
       {/* Dynamic View Router */}
+      {/* Give each page the current username and a way to update it. */}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/play" element={<Play />} />
-        <Route path="/scores" element={<Scores />} />
+        <Route
+          path="/"
+          element={<Home userName={userName} onAuthChange={handleAuthChange} />}
+        />
+        <Route
+          path="/play"
+          element={<Play userName={userName} onAuthChange={handleAuthChange} />}
+        />
+        <Route
+          path="/scores"
+          element={<Scores userName={userName} onAuthChange={handleAuthChange} />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
 

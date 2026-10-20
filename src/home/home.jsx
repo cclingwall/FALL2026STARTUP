@@ -2,7 +2,18 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './home.css';
 
-export function Home() {
+export function Home({ userName, onAuthChange }) {
+  // Pass the submitted username to App after trimming any extra spaces.
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const submittedName = new FormData(event.currentTarget).get('username');
+    const normalizedName = submittedName?.toString().trim();
+
+    if (normalizedName) {
+      onAuthChange(normalizedName);
+    }
+  };
+
   return (
     <main className="home-page container py-5">
       <div className="row g-4">
@@ -65,13 +76,15 @@ export function Home() {
         <section className="col-12 col-lg-6 d-flex" aria-labelledby="login-heading">
           <div className="luxury-panel w-100">
             <h2 id="login-heading">Account Login</h2>
-            <form className="row g-3" onSubmit={(e) => e.preventDefault()}>
+            <form className="row g-3" onSubmit={handleSubmit}>
               <label htmlFor="username">Username</label>
+              {/* Prefill the field so returning users do not need to retype their name. */}
               <input
                 type="text"
                 id="username"
                 name="username"
                 autoComplete="username"
+                defaultValue={userName || ''}
                 required
               />
 

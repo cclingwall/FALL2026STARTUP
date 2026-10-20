@@ -123,14 +123,20 @@ header h1 {
   white-space: nowrap;
 }
 
-/* The empty avatar provides a visual account anchor without user data. */
+/* Center the user's first initial inside the account avatar. */
 .user-avatar {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 1.65rem;
   height: 1.65rem;
   border: 1px solid var(--gold);
   border-radius: 50%;
   background: rgba(176, 141, 117, 0.16);
+  color: var(--gold-light);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: normal;
 }
 
 /* Shared navigation: inline links and the slide-out navigation drawer. */
