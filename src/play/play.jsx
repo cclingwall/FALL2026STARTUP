@@ -1,12 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { noteFrequencies, playChord, playNote, playReferenceC } from './sound.js';
 import './play.css';
 
-const pitchClasses = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const semitoneMap = {
+  C: 0,
+  Db: 1,
+  D: 2,
+  Eb: 3,
+  E: 4,
+  F: 5,
+  Gb: 6,
+  G: 7,
+  Ab: 8,
+  A: 9,
+  Bb: 10,
+  B: 11
+};
+const naturalPitchClasses = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const sharpFlatPitchClasses = [
+  { note: 'Db', boundary: 1 },
+  { note: 'Eb', boundary: 2 },
+  { note: 'Gb', boundary: 4 },
+  { note: 'Ab', boundary: 5 },
+  { note: 'Bb', boundary: 6 }
+];
 const playableNotes = Object.keys(noteFrequencies);
 
-function getPitchClass(noteName) {
-  return noteName.replace(/\d+$/, '');
+function splitTargetNote(noteName) {
+  const match = noteName.match(/^([A-G](?:b)?)(\d+)$/);
+  if (!match) {
+    throw new Error(`Invalid target note "${noteName}".`);
+  }
+
+  return { note: match[1], octave: Number(match[2]) };
 }
 
 export function Play() {
@@ -14,50 +40,86 @@ export function Play() {
   const [hardMode, setHardMode] = useState(false);
   const [targetNote, setTargetNote] = useState(null);
   const [currentStreak, setCurrentStreak] = useState(0);
+  const [attemptEvents, setAttemptEvents] = useState([]);
+  const [flashingKey, setFlashingKey] = useState(null);
   const [feedback, setFeedback] = useState('Choose a mode, then play a challenge.');
+  const toneStartTime = useRef(null);
+  const referenceUsed = useRef(false);
+  const keyFlashTimeout = useRef(null);
+
+  useEffect(() => () => window.clearTimeout(keyFlashTimeout.current), []);
 
   // Choose a random root from all three octaves for either game mode.
   const handlePlayChallenge = async () => {
-    const noteName = playableNotes[Math.floor(Math.random() * playableNotes.length)];
+    const selectedNote = playableNotes[Math.floor(Math.random() * playableNotes.length)];
     const quality = gameMode === 'chords' ? (Math.random() < 0.5 ? 'major' : 'minor') : null;
+    const targetPitch = { ...splitTargetNote(selectedNote), quality };
 
-    setTargetNote({ noteName, quality });
+    toneStartTime.current = Date.now();
+    referenceUsed.current = false;
+    setTargetNote(targetPitch);
     setFeedback(gameMode === 'chords' ? 'Listen to the chord, then guess its root.' : 'Listen to the note.');
 
     try {
       if (quality) {
-        await playChord(noteName, quality);
+        await playChord(selectedNote, quality);
       } else {
-        await playNote(noteName);
+        await playNote(selectedNote);
       }
     } catch (error) {
       setTargetNote(null);
+      toneStartTime.current = null;
       setFeedback(`Could not play audio: ${error.message}`);
     }
   };
 
-  // Score the selected pitch class and wait for the next challenge.
-  const handleGuess = (pitchClass) => {
-    if (!targetNote) {
+  // Record the answer and its timing before clearing the active challenge.
+  const handleGuess = async (guessedNote) => {
+    if (!targetNote || toneStartTime.current === null) {
       setFeedback('Play a challenge before choosing a note.');
       return;
     }
 
-    const correct = getPitchClass(targetNote.noteName) === pitchClass;
-    const chordDescription = targetNote.quality ? ` ${targetNote.quality} chord` : '';
+    const responseTimeMs = Date.now() - toneStartTime.current;
+    const isCorrect = targetNote.note === guessedNote;
+    const attemptEvent = {
+      timestamp: new Date().toISOString(),
+      mode: gameMode,
+      hardMode,
+      targetNote: targetNote.note,
+      targetOctave: targetNote.octave,
+      guessedNote,
+      isCorrect,
+      semitonesFromC: semitoneMap[targetNote.note],
+      errorSemitones: semitoneMap[guessedNote] - semitoneMap[targetNote.note],
+      responseTimeMs,
+      usedReferenceC: referenceUsed.current,
+      streakAtAttempt: currentStreak
+    };
+    const nextStreak = isCorrect ? currentStreak + 1 : 0;
+    const targetLabel = `${targetNote.note}${targetNote.octave}`;
+    const responseSeconds = (responseTimeMs / 1000).toFixed(1);
 
-    if (correct) {
-      setCurrentStreak((streak) => streak + 1);
-    } else {
-      setCurrentStreak(0);
-    }
+    setAttemptEvents((events) => [...events, attemptEvent]);
+    setCurrentStreak(nextStreak);
+    setFlashingKey({ note: guessedNote, result: isCorrect ? 'key-correct' : 'key-wrong' });
+    window.clearTimeout(keyFlashTimeout.current);
+    keyFlashTimeout.current = window.setTimeout(() => setFlashingKey(null), 700);
+    setTargetNote(null);
+    toneStartTime.current = null;
+    referenceUsed.current = false;
 
     setFeedback(
-      correct
-        ? `Correct! It was ${targetNote.noteName}${chordDescription}.`
-        : `Not quite. It was ${targetNote.noteName}${chordDescription}.`
+      isCorrect
+        ? `Correct! ${targetLabel} identified in ${responseSeconds}s (+1 Streak).`
+        : `Not quite. It was ${targetLabel}; your response took ${responseSeconds}s.`
     );
-    setTargetNote(null);
+
+    try {
+      await playNote(`${guessedNote}${targetNote.octave}`);
+    } catch (error) {
+      setFeedback((currentFeedback) => `${currentFeedback} Could not play your guess: ${error.message}`);
+    }
   };
 
   // Do not play the reference pitch while Hard Mode is enabled.
@@ -67,11 +129,28 @@ export function Play() {
     }
 
     try {
+      if (targetNote && toneStartTime.current !== null) {
+        referenceUsed.current = true;
+      }
       await playReferenceC();
       setFeedback('Reference pitch: C4 (261.63 Hz).');
     } catch (error) {
       setFeedback(`Could not play audio: ${error.message}`);
     }
+  };
+
+  // Switching modes clears the previous challenge so it cannot be answered in the new mode.
+  const handleGameModeChange = (event) => {
+    const nextMode = event.target.checked ? 'chords' : 'single';
+    setGameMode(nextMode);
+    setTargetNote(null);
+    toneStartTime.current = null;
+    referenceUsed.current = false;
+    setFeedback(
+      nextMode === 'chords'
+        ? 'Chord mode selected. Play a challenge.'
+        : 'Single-note mode selected. Play a challenge.'
+    );
   };
 
   return (
@@ -83,28 +162,20 @@ export function Play() {
           {/* Game mode and tone playback controls */}
           <section className="game-section" aria-labelledby="controls-heading">
             <h3 id="controls-heading">Game Controls</h3>
-            <button
-              type="button"
-              aria-pressed={gameMode === 'single'}
-              onClick={() => {
-                setGameMode('single');
-                setTargetNote(null);
-                setFeedback('Single-note mode selected. Play a challenge.');
-              }}
-            >
-              Single Notes
-            </button>
-            <button
-              type="button"
-              aria-pressed={gameMode === 'chords'}
-              onClick={() => {
-                setGameMode('chords');
-                setTargetNote(null);
-                setFeedback('Chord mode selected. Play a challenge.');
-              }}
-            >
-              Chords
-            </button>
+            <div className="game-mode-toggle">
+              <span>Single Notes</span>
+              <label className="mode-switch">
+                <input
+                  type="checkbox"
+                  role="switch"
+                  aria-label="Chord mode"
+                  checked={gameMode === 'chords'}
+                  onChange={handleGameModeChange}
+                />
+                <span className="mode-switch-track" aria-hidden="true" />
+              </label>
+              <span>Chords</span>
+            </div>
             <button type="button" onClick={handlePlayChallenge}>
               Play {gameMode === 'chords' ? 'Chord' : 'Tone'}
             </button>
@@ -133,20 +204,47 @@ export function Play() {
             <p className="current-streak" aria-live="polite">
               Current streak: {currentStreak}
             </p>
+            <p className="attempt-count">Attempts recorded this session: {attemptEvents.length}</p>
           </section>
 
           {/* Piano-note guess buttons and result feedback area */}
           <section className="game-section" aria-labelledby="guess-heading">
             <h3 id="guess-heading">Which pitch class did you hear?</h3>
-            <ul aria-label="Pitch class guesses">
-              {pitchClasses.map((pitchClass) => (
-                <li key={pitchClass}>
-                  <button type="button" onClick={() => handleGuess(pitchClass)}>
+            <div className="piano-keyboard" role="group" aria-label="Pitch class guesses">
+              <div className="natural-keys">
+                {naturalPitchClasses.map((pitchClass) => (
+                  <button
+                    type="button"
+                    key={pitchClass}
+                    className={[
+                      'pitch-class-key',
+                      'natural-key',
+                      flashingKey?.note === pitchClass ? flashingKey.result : ''
+                    ].filter(Boolean).join(' ')}
+                    onClick={() => handleGuess(pitchClass)}
+                    aria-label={`Guess ${pitchClass}`}
+                  >
                     {pitchClass}
                   </button>
-                </li>
+                ))}
+              </div>
+              {sharpFlatPitchClasses.map(({ note, boundary }) => (
+                <button
+                  type="button"
+                  key={note}
+                  className={[
+                    'pitch-class-key',
+                    'sharp-flat-key',
+                    flashingKey?.note === note ? flashingKey.result : ''
+                  ].filter(Boolean).join(' ')}
+                  style={{ left: `${(boundary / naturalPitchClasses.length) * 100}%` }}
+                  onClick={() => handleGuess(note)}
+                  aria-label={`Guess ${note}`}
+                >
+                  {note}
+                </button>
               ))}
-            </ul>
+            </div>
             <p aria-live="polite">{feedback}</p>
           </section>
         </section>
