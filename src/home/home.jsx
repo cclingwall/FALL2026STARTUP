@@ -1,17 +1,27 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './home.css';
 
 export function Home({ userName, onAuthChange }) {
-  // Pass the submitted username to App after trimming any extra spaces.
+  const [usernameInput, setUsernameInput] = useState(userName || '');
+  const [passwordInput, setPasswordInput] = useState('');
+  const navigate = useNavigate();
+
+  // Keep the typed values in React state and send a non-empty name to App.
   const handleSubmit = (event) => {
     event.preventDefault();
-    const submittedName = new FormData(event.currentTarget).get('username');
-    const normalizedName = submittedName?.toString().trim();
+    const normalizedName = usernameInput.trim();
 
     if (normalizedName) {
       onAuthChange(normalizedName);
     }
+  };
+
+  // Clear the shared login and local form values when the user logs out.
+  const handleLogout = () => {
+    onAuthChange('');
+    setUsernameInput('');
+    setPasswordInput('');
   };
 
   return (
@@ -75,31 +85,46 @@ export function Home({ userName, onAuthChange }) {
         {/* Login Panel */}
         <section className="col-12 col-lg-6 d-flex" aria-labelledby="login-heading">
           <div className="luxury-panel w-100">
-            <h2 id="login-heading">Account Login</h2>
-            <form className="row g-3" onSubmit={handleSubmit}>
-              <label htmlFor="username">Username</label>
-              {/* Prefill the field so returning users do not need to retype their name. */}
-              <input
-                type="text"
-                id="username"
-                name="username"
-                autoComplete="username"
-                defaultValue={userName || ''}
-                required
-              />
+            <h2 id="login-heading">{userName ? 'Welcome' : 'Account Login'}</h2>
+            {userName ? (
+              <div className="row g-3">
+                <p>Welcome to the stage, {userName}</p>
+                <button type="button" onClick={() => navigate('/play')}>
+                  Enter Ear Training Arena
+                </button>
+                <button type="button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <form className="row g-3" onSubmit={handleSubmit}>
+                <label htmlFor="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  autoComplete="username"
+                  value={usernameInput}
+                  onChange={(event) => setUsernameInput(event.target.value)}
+                  required
+                />
 
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                autoComplete="current-password"
-                required
-              />
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  autoComplete="current-password"
+                  value={passwordInput}
+                  onChange={(event) => setPasswordInput(event.target.value)}
+                  required
+                />
 
-              <button type="submit">Login</button>
-              <NavLink to="/play">Create Account</NavLink>
-            </form>
+                {/* Both actions currently save a local username; credentials are not verified yet. */}
+                <button type="submit">Login</button>
+                <button type="submit">Create Account</button>
+              </form>
+            )}
           </div>
         </section>
 
