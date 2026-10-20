@@ -1,7 +1,7 @@
 ### Pitch Royale
 curtislingwall.click
 
-[My Notes](notes.md)
+[My Notes](docs/notes.md)
 
 **Pitch Royale is a web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit milestones, and show daily music trivia. Later versions will include both single and multi-player options.**
 
@@ -19,9 +19,9 @@ Want to take it back? Try Pitch Royale.
 
 ### Design
 
-![Design image](Sketchup.jpeg)
+![Design image](docs/design/Sketchup.jpeg)
 
-![Design image](mockupDesign.png)
+![Design image](docs/design/mockupDesign.png)
 
 
 ```mermaid
