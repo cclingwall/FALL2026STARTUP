@@ -10,17 +10,19 @@ function getPitchClass(noteName) {
 }
 
 export function Play() {
-  const [mode, setMode] = useState('single');
-  const [challenge, setChallenge] = useState(null);
+  const [gameMode, setGameMode] = useState('single');
+  const [hardMode, setHardMode] = useState(false);
+  const [targetNote, setTargetNote] = useState(null);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [feedback, setFeedback] = useState('Choose a mode, then play a challenge.');
 
   // Choose a random root from all three octaves for either game mode.
   const handlePlayChallenge = async () => {
     const noteName = playableNotes[Math.floor(Math.random() * playableNotes.length)];
-    const quality = mode === 'chord' ? (Math.random() < 0.5 ? 'major' : 'minor') : null;
+    const quality = gameMode === 'chords' ? (Math.random() < 0.5 ? 'major' : 'minor') : null;
 
-    setChallenge({ noteName, quality });
-    setFeedback(mode === 'chord' ? 'Listen to the chord, then guess its root.' : 'Listen to the note.');
+    setTargetNote({ noteName, quality });
+    setFeedback(gameMode === 'chords' ? 'Listen to the chord, then guess its root.' : 'Listen to the note.');
 
     try {
       if (quality) {
@@ -29,30 +31,41 @@ export function Play() {
         await playNote(noteName);
       }
     } catch (error) {
-      setChallenge(null);
+      setTargetNote(null);
       setFeedback(`Could not play audio: ${error.message}`);
     }
   };
 
   // Score the selected pitch class and wait for the next challenge.
   const handleGuess = (pitchClass) => {
-    if (!challenge) {
+    if (!targetNote) {
       setFeedback('Play a challenge before choosing a note.');
       return;
     }
 
-    const correct = getPitchClass(challenge.noteName) === pitchClass;
-    const chordDescription = challenge.quality ? ` ${challenge.quality} chord` : '';
+    const correct = getPitchClass(targetNote.noteName) === pitchClass;
+    const chordDescription = targetNote.quality ? ` ${targetNote.quality} chord` : '';
+
+    if (correct) {
+      setCurrentStreak((streak) => streak + 1);
+    } else {
+      setCurrentStreak(0);
+    }
+
     setFeedback(
       correct
-        ? `Correct! It was ${challenge.noteName}${chordDescription}.`
-        : `Not quite. It was ${challenge.noteName}${chordDescription}.`
+        ? `Correct! It was ${targetNote.noteName}${chordDescription}.`
+        : `Not quite. It was ${targetNote.noteName}${chordDescription}.`
     );
-    setChallenge(null);
+    setTargetNote(null);
   };
 
-  // Keep the reference pitch available without changing the current challenge.
+  // Do not play the reference pitch while Hard Mode is enabled.
   const handlePlayReference = async () => {
+    if (hardMode) {
+      return;
+    }
+
     try {
       await playReferenceC();
       setFeedback('Reference pitch: C4 (261.63 Hz).');
@@ -72,10 +85,10 @@ export function Play() {
             <h3 id="controls-heading">Game Controls</h3>
             <button
               type="button"
-              aria-pressed={mode === 'single'}
+              aria-pressed={gameMode === 'single'}
               onClick={() => {
-                setMode('single');
-                setChallenge(null);
+                setGameMode('single');
+                setTargetNote(null);
                 setFeedback('Single-note mode selected. Play a challenge.');
               }}
             >
@@ -83,26 +96,48 @@ export function Play() {
             </button>
             <button
               type="button"
-              aria-pressed={mode === 'chord'}
+              aria-pressed={gameMode === 'chords'}
               onClick={() => {
-                setMode('chord');
-                setChallenge(null);
+                setGameMode('chords');
+                setTargetNote(null);
                 setFeedback('Chord mode selected. Play a challenge.');
               }}
             >
               Chords
             </button>
             <button type="button" onClick={handlePlayChallenge}>
-              Play {mode === 'chord' ? 'Chord' : 'Note'}
+              Play {gameMode === 'chords' ? 'Chord' : 'Tone'}
             </button>
+            <button
+              className="reference-pitch"
+              type="button"
+              onClick={handlePlayReference}
+              disabled={hardMode}
+              title={hardMode ? 'Reference Pitch Disabled in Hard Mode' : 'Play C4 at 261.63 Hz'}
+            >
+              Play Reference C4
+            </button>
+            {hardMode && (
+              <span className="hard-mode-badge" role="status">
+                Reference Pitch Disabled in Hard Mode
+              </span>
+            )}
+            <label className="hard-mode-toggle">
+              <input
+                type="checkbox"
+                checked={hardMode}
+                onChange={(event) => setHardMode(event.target.checked)}
+              />
+              Hard Mode (Perfect Pitch)
+            </label>
+            <p className="current-streak" aria-live="polite">
+              Current streak: {currentStreak}
+            </p>
           </section>
 
           {/* Piano-note guess buttons and result feedback area */}
           <section className="game-section" aria-labelledby="guess-heading">
             <h3 id="guess-heading">Which pitch class did you hear?</h3>
-            <button className="reference-pitch" type="button" onClick={handlePlayReference}>
-              Play Reference C4 (261.63 Hz)
-            </button>
             <ul aria-label="Pitch class guesses">
               {pitchClasses.map((pitchClass) => (
                 <li key={pitchClass}>

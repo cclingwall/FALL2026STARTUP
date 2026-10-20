@@ -33,8 +33,41 @@
 }
 
 .play-page .reference-pitch {
-  display: block;
-  margin: 0.75rem auto;
+  margin: 0.25rem 0.35rem 0.25rem 0;
+}
+
+.play-page .reference-pitch:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.play-page .hard-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0.75rem;
+  color: var(--text);
+}
+
+.play-page .hard-mode-toggle input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--gold);
+}
+
+.play-page .hard-mode-badge {
+  display: inline-block;
+  margin: 0.25rem 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.play-page .current-streak {
+  margin-top: 0.75rem;
+  color: var(--gold-light);
+  font-weight: 600;
 }
 
 /* Game feedback and activity: highlight results and space feed items. */
