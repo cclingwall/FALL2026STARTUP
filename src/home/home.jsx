@@ -17,25 +17,26 @@ const heroSlides = [
   }
 ];
 
-const triviaFacts = [
-  'A440 is the standard tuning pitch for the note A above middle C.',
-  'An octave is the interval between two notes with the same letter name.',
-  'A major chord is built from a root, a major third, and a perfect fifth.',
-  'Perfect pitch is the ability to identify a note without hearing a reference tone.',
-  'The piano is a percussion instrument because hammers strike its strings.'
+// Local examples until the third-party trivia API is connected.
+const triviaQuestions = [
+  { question: 'What frequency is the standard tuning pitch A above middle C?', answer: '440 Hz.' },
+  { question: 'What is the interval between two notes one octave apart?', answer: 'An octave spans twelve semitones.' },
+  { question: 'Which intervals form a major chord?', answer: 'A root, a major third, and a perfect fifth.' },
+  { question: 'What is the ability to identify a note without a reference tone called?', answer: 'Absolute pitch, also called perfect pitch.' },
+  { question: 'Why is the piano classified as a percussion instrument?', answer: 'Hammers strike its strings to produce sound.' },
 ];
 
-// Pick a different fact when possible so the button always shows a change.
-function chooseTriviaFact(currentFact) {
-  const otherFacts = triviaFacts.filter((fact) => fact !== currentFact);
-  return otherFacts[Math.floor(Math.random() * otherFacts.length)];
+function chooseTriviaQuestion(currentQuestion) {
+  const others = triviaQuestions.filter((item) => item !== currentQuestion);
+  return others[Math.floor(Math.random() * others.length)];
 }
 
 export function Home({ userName, onAuthChange }) {
   const [usernameInput, setUsernameInput] = useState(userName || '');
   const [passwordInput, setPasswordInput] = useState('');
   const [activeSlide, setActiveSlide] = useState(0);
-  const [triviaFact, setTriviaFact] = useState('Loading a music fact...');
+  const [trivia, setTrivia] = useState(() => chooseTriviaQuestion(null));
+  const [answerVisible, setAnswerVisible] = useState(false);
   const navigate = useNavigate();
 
   // Rotate the hero slides every six seconds and stop the timer when Home unmounts.
@@ -45,15 +46,6 @@ export function Home({ userName, onAuthChange }) {
     }, 6000);
 
     return () => window.clearInterval(intervalId);
-  }, []);
-
-  // Simulate an asynchronous trivia request with a short delay and local facts.
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      setTriviaFact(chooseTriviaFact(''));
-    }, 300);
-
-    return () => window.clearTimeout(timeoutId);
   }, []);
 
   // Keep the typed values in React state and send a non-empty name to App.
@@ -176,12 +168,26 @@ export function Home({ userName, onAuthChange }) {
         <section className="col-12 col-lg-6 d-flex" aria-labelledby="trivia-heading">
           <div className="luxury-panel w-100">
             <h2 id="trivia-heading">Daily Music Trivia</h2>
-            <p id="daily-trivia" aria-live="polite">{triviaFact}</p>
+            <p id="daily-trivia" aria-live="polite">{trivia.question}</p>
             <button
               type="button"
-              onClick={() => setTriviaFact((currentFact) => chooseTriviaFact(currentFact))}
+              aria-expanded={answerVisible}
+              aria-controls="trivia-answer"
+              onClick={() => setAnswerVisible((visible) => !visible)}
             >
-              New Music Fact
+              {answerVisible ? 'Hide Answer' : 'Reveal Answer'}
+            </button>
+            <div id="trivia-answer" aria-live="polite">
+              {answerVisible && <p><strong>Answer:</strong> {trivia.answer}</p>}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setTrivia((current) => chooseTriviaQuestion(current));
+                setAnswerVisible(false);
+              }}
+            >
+              Next Question
             </button>
           </div>
         </section>
