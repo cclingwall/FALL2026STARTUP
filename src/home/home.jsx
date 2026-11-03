@@ -17,27 +17,69 @@ const heroSlides = [
   }
 ];
 
-// Local examples until the third-party trivia API is connected.
-const triviaQuestions = [
-  { question: 'What frequency is the standard tuning pitch A above middle C?', answer: '440 Hz.' },
-  { question: 'What is the interval between two notes one octave apart?', answer: 'An octave spans twelve semitones.' },
-  { question: 'Which intervals form a major chord?', answer: 'A root, a major third, and a perfect fifth.' },
-  { question: 'What is the ability to identify a note without a reference tone called?', answer: 'Absolute pitch, also called perfect pitch.' },
-  { question: 'Why is the piano classified as a percussion instrument?', answer: 'Hammers strike its strings to produce sound.' },
-];
+async function fetchMusicTrivia(signal) {
+  const response = await fetch(
+    'https://the-trivia-api.com/v2/questions?categories=music&limit=1',
+    { signal }
+  );
 
-function chooseTriviaQuestion(currentQuestion) {
-  const others = triviaQuestions.filter((item) => item !== currentQuestion);
-  return others[Math.floor(Math.random() * others.length)];
+  if (!response.ok) {
+    throw new Error('Could not load music trivia. Please try again.');
+  }
+
+  const data = await response.json();
+  const item = data[0];
+
+  if (!item?.question?.text || !item?.correctAnswer) {
+    throw new Error('No trivia question was returned.');
+  }
+
+  return {
+    question: item.question.text,
+    answer: item.correctAnswer,
+  };
 }
 
 export function Home({ userName, onAuthChange }) {
   const [usernameInput, setUsernameInput] = useState(userName || '');
   const [passwordInput, setPasswordInput] = useState('');
   const [activeSlide, setActiveSlide] = useState(0);
-  const [trivia, setTrivia] = useState(() => chooseTriviaQuestion(null));
+  const [trivia, setTrivia] = useState(null);
   const [answerVisible, setAnswerVisible] = useState(false);
+  const [triviaLoading, setTriviaLoading] = useState(true);
+  const [triviaError, setTriviaError] = useState('');
+  const [triviaRequest, setTriviaRequest] = useState(0);
   const navigate = useNavigate();
+
+  // Fetch on mount and whenever Next Question or Try Again is clicked.
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadTrivia() {
+      setTriviaLoading(true);
+      setTriviaError('');
+      setTrivia(null);
+      setAnswerVisible(false);
+
+      try {
+        const nextTrivia = await fetchMusicTrivia(controller.signal);
+        if (!controller.signal.aborted) {
+          setTrivia(nextTrivia);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setTriviaError(error.message);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setTriviaLoading(false);
+        }
+      }
+    }
+
+    loadTrivia();
+    return () => controller.abort();
+  }, [triviaRequest]);
 
   // Rotate the hero slides every six seconds and stop the timer when Home unmounts.
   useEffect(() => {
@@ -167,28 +209,51 @@ export function Home({ userName, onAuthChange }) {
         {/* Trivia Panel */}
         <section className="col-12 col-lg-6 d-flex" aria-labelledby="trivia-heading">
           <div className="luxury-panel w-100">
-            <h2 id="trivia-heading">Daily Music Trivia</h2>
-            <p id="daily-trivia" aria-live="polite">{trivia.question}</p>
-            <button
-              type="button"
-              aria-expanded={answerVisible}
-              aria-controls="trivia-answer"
-              onClick={() => setAnswerVisible((visible) => !visible)}
-            >
-              {answerVisible ? 'Hide Answer' : 'Reveal Answer'}
-            </button>
-            <div id="trivia-answer" aria-live="polite">
-              {answerVisible && <p><strong>Answer:</strong> {trivia.answer}</p>}
+            <h2 id="trivia-heading">Music Trivia</h2>
+
+            <div aria-live="polite">
+              {triviaLoading && <p>Loading a music question...</p>}
+              {triviaError && <p role="alert">{triviaError}</p>}
+              {trivia && <p id="daily-trivia">{trivia.question}</p>}
             </div>
+
+            {trivia && (
+              <>
+                <button
+                  type="button"
+                  aria-expanded={answerVisible}
+                  aria-controls="trivia-answer"
+                  onClick={() => setAnswerVisible((visible) => !visible)}
+                >
+                  {answerVisible ? 'Hide Answer' : 'Reveal Answer'}
+                </button>
+
+                <div id="trivia-answer" aria-live="polite">
+                  {answerVisible && (
+                    <p><strong>Answer:</strong> {trivia.answer}</p>
+                  )}
+                </div>
+              </>
+            )}
+
             <button
               type="button"
-              onClick={() => {
-                setTrivia((current) => chooseTriviaQuestion(current));
-                setAnswerVisible(false);
-              }}
+              disabled={triviaLoading}
+              onClick={() => setTriviaRequest((current) => current + 1)}
             >
-              Next Question
+              {triviaError ? 'Try Again' : 'Next Question'}
             </button>
+
+            <p className="mt-3">
+              Questions provided by{' '}
+              <a
+                href="https://the-trivia-api.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                The Trivia API
+              </a>
+            </p>
           </div>
         </section>
       </div>
