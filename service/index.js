@@ -1,13 +1,15 @@
 const express = require('express');
-
+const { randomBytes } = require('node:crypto');
 const app = express();
 const port = 4000;
 const path = require('node:path');
-
 const bcrypt = require('bcryptjs');
 
 // Temporary storage: accounts disappear when the server restarts.
 const users = new Map();
+const sessions = new Map();
+const sessionDurationMs = 24 * 60 * 60 * 1000; // 24 hours
+
 
 app.use(express.json());
 
@@ -61,6 +63,47 @@ app.post('/api/auth/register', async (req, res) => {
   });
 
   return res.status(201).json({ username: name });
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  const { username, password } = req.body ?? {};
+
+  if (
+    typeof username !== 'string' ||
+    typeof password !== 'string' ||
+    password.length === 0 ||
+    Buffer.byteLength(password, 'utf8') > 72
+  ) {
+    return res.status(400).json({
+      message: 'A valid username and password are required.',
+    });
+  }
+
+  const userKey = username.trim().toLowerCase();
+  const user = users.get(userKey);
+
+  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    return res.status(401).json({
+      message: 'Incorrect username or password.',
+    });
+  }
+
+  const token = randomBytes(32).toString('hex');
+
+  sessions.set(token, {
+    userKey,
+    expiresAt: Date.now() + sessionDurationMs,
+  });
+
+  res.cookie('authToken', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: sessionDurationMs,
+  });
+
+  return res.json({ username: user.username });
 });
 
 app.use('/api', (req, res) => {
