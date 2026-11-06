@@ -13,8 +13,10 @@ export default function App() {
   const [introDismissed, setIntroDismissed] = useState(
     () => sessionStorage.getItem('introDismissed') === 'true'
   );
-  // Load the saved username once so every page starts with the same user.
-  const [userName, setUserName] = useState(() => localStorage.getItem('userName'));
+  
+  const [userName, setUserName] = useState('');
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState('');
 
   // Hide the intro and save that choice for the rest of this tab's session.
   const dismissIntro = () => {
@@ -22,17 +24,48 @@ export default function App() {
     setIntroDismissed(true);
   };
 
-  // Update the shared name and keep it saved across browser sessions.
+  // Update the shared name after a successful server response.
   const handleAuthChange = (name) => {
-    const normalizedName = name.trim();
-    setUserName(normalizedName);
-
-    if (normalizedName) {
-      localStorage.setItem('userName', normalizedName);
-    } else {
-      localStorage.removeItem('userName');
-    }
+    setUserName(name);
   };
+
+  useEffect(() => {
+  const controller = new AbortController();
+
+  async function restoreSession() {
+    try {
+      const response = await fetch('/api/user/me', {
+        signal: controller.signal,
+      });
+
+      if (response.status === 401) {
+        return; // No active session; stay logged out.
+      }
+
+      if (!response.ok) {
+        throw new Error('Could not check your login session.');
+      }
+
+      const user = await response.json();
+
+      if (!controller.signal.aborted) {
+        setUserName(user.username);
+      }
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        setAuthError('Could not check your session. Please refresh to retry.');
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setAuthLoading(false);
+      }
+    }
+  }
+
+  restoreSession();
+
+  return () => controller.abort();
+}, []);
 
   // Close sidebar on Escape key
   useEffect(() => {
@@ -44,6 +77,21 @@ export default function App() {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+if (authLoading) {
+  return <main className="container py-5">Checking your session...</main>;
+}
+
+if (authError) {
+  return (
+    <main className="container py-5">
+      <p role="alert">{authError}</p>
+      <button type="button" onClick={() => window.location.reload()}>
+        Retry
+      </button>
+    </main>
+  );
+}
 
   const closeSidebar = () => setSidebarOpen(false);
 

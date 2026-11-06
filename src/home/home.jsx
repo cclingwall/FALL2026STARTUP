@@ -50,6 +50,9 @@ export function Home({ userName, onAuthChange }) {
   const [triviaError, setTriviaError] = useState('');
   const [triviaRequest, setTriviaRequest] = useState(0);
   const navigate = useNavigate();
+  const [authPending, setAuthPending] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [authMessage, setAuthMessage] = useState('');
 
   // Fetch on mount and whenever Next Question or Try Again is clicked.
   useEffect(() => {
@@ -90,22 +93,71 @@ export function Home({ userName, onAuthChange }) {
     return () => window.clearInterval(intervalId);
   }, []);
 
-  // Keep the typed values in React state and send a non-empty name to App.
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const normalizedName = usernameInput.trim();
+  const handleSubmit = async (event) => {
+  event.preventDefault();
+  if (authPending) return;
 
-    if (normalizedName) {
-      onAuthChange(normalizedName);
+  const action = event.nativeEvent.submitter?.value || 'login';
+
+  setAuthPending(true);
+  setAuthError('');
+  setAuthMessage('');
+
+  try {
+    const response = await fetch(`/api/auth/${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: usernameInput.trim(),
+        password: passwordInput,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Account request failed.');
     }
-  };
 
-  // Clear the shared login and local form values when the user logs out.
-  const handleLogout = () => {
+    setPasswordInput('');
+
+    if (action === 'register') {
+      setAuthMessage('Account created! You can now log in.');
+    } else {
+      onAuthChange(data.username);
+    }
+  } catch (error) {
+    setAuthError(error.message);
+  } finally {
+    setAuthPending(false);
+  }
+};
+
+const handleLogout = async () => {
+  if (authPending) return;
+
+  setAuthPending(true);
+  setAuthError('');
+  setAuthMessage('');
+
+  try {
+    const response = await fetch('/api/auth/logout', {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Could not log out. Please try again.');
+    }
+
     onAuthChange('');
     setUsernameInput('');
     setPasswordInput('');
-  };
+  } catch (error) {
+    setAuthError(error.message);
+  } finally {
+    setAuthPending(false);
+  }
+};
 
   return (
     <main className="home-page container py-5">
@@ -164,13 +216,18 @@ export function Home({ userName, onAuthChange }) {
         <section className="col-12 col-lg-6 d-flex" aria-labelledby="login-heading">
           <div className="luxury-panel w-100">
             <h2 id="login-heading">{userName ? 'Welcome' : 'Account Login'}</h2>
+            <div aria-live="polite">
+              {authPending && <p>Working...</p>}
+              {authMessage && <p>{authMessage}</p>}
+            </div>
+            {authError && <p role="alert">{authError}</p>}
             {userName ? (
               <div className="row g-3">
                 <p>Welcome to the stage, {userName}</p>
                 <button type="button" onClick={() => navigate('/play')}>
                   Enter Ear Training Arena
                 </button>
-                <button type="button" onClick={handleLogout}>
+                <button type="button" onClick={handleLogout} disabled={authPending}>
                   Logout
                 </button>
               </div>
@@ -198,9 +255,8 @@ export function Home({ userName, onAuthChange }) {
                   required
                 />
 
-                {/* Both actions currently save a local username; credentials are not verified yet. */}
-                <button type="submit">Login</button>
-                <button type="submit">Create Account</button>
+                <button type="submit" value="login" disabled={authPending}>Login</button>
+                <button type="submit" value="register" disabled={authPending}>Create Account</button>
               </form>
             )}
           </div>
