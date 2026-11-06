@@ -3,6 +3,29 @@ curtislingwall.click
 
 [My Notes](docs/notes.md)
 
+## Running and deploying the service
+
+See [local setup and service deployment instructions](docs/deployment.md).
+Use `bash scripts/deployService.sh -n` to test and verify a deployment package
+locally. The service script deploys both Express and React; the old React script
+now forwards to it. Live deployment and public HTTPS checks are still pending.
+
+| Method | Endpoint | Login required | Purpose |
+| --- | --- | --- | --- |
+| GET | /api/health | No | Service health |
+| POST | /api/auth/register | No | Create account with BCrypt password hash |
+| POST | /api/auth/login | No | Issue HttpOnly session cookie |
+| DELETE | /api/auth/logout | No | Invalidate session and clear cookie |
+| GET | /api/user/me | Yes | Current account |
+| POST | /api/attempts | Yes | Validate and save a game guess |
+| GET | /api/stats | Yes | Personal game statistics |
+| GET | /api/leaderboard | No | Rankings by best streak |
+
+Users, sessions, and attempts are held in server memory and reset on restart.
+Guest play is not saved. The frontend fetches music trivia directly from
+[The Trivia API](https://the-trivia-api.com/), with click-to-reveal answers.
+
+
 **Pitch Royale is a web-based ear training game where you learn to identify notes and chords. When you start a round, the computer plays a sound, and you click a piano key or chord button on your screen to guess what you just heard. Getting correct answers earns you points, builds a streak, and moves your name up a leaderboard saved to your account. Pop-up feeds will show when other live players hit milestones, and show daily music trivia. Later versions will include both single and multi-player options.**
 
 ### Elevator pitch
@@ -29,7 +52,7 @@ sequenceDiagram
     actor Player
     participant Play as Play page
     participant Audio as Web Audio API
-    participant Storage as Browser localStorage
+    participant Storage as Express service (in-memory data)
     participant Feed as Simulated activity feed
     participant Scores as Scores page / mock AI Coach
 
@@ -37,11 +60,11 @@ sequenceDiagram
     Play->>Audio: Plays randomized pitch from C3-B5
     Audio-->>Player: Plays the challenge
     Player->>Play: Selects a piano key guess
-    Play->>Storage: Saves attempt and aggregated stats
+    Play->>Storage: POST /api/attempts with session cookie
     Play-->>Player: Shows answer feedback and streak
     Play->>Feed: Adds local milestones and rotates mock peer events
     Player->>Scores: Opens leaderboard and personal stats
-    Scores->>Storage: Loads saved telemetry and leaderboard
+    Scores->>Storage: GET /api/stats and /api/leaderboard
     Player->>Scores: Requests AI Coach analysis
     Scores-->>Player: Shows tailored mock coaching insight
 ```
@@ -50,24 +73,24 @@ sequenceDiagram
 
 Piano & Sound Player - Plays randomized single notes or chords across three octaves. The user guesses with an interactive piano keyboard.
 
-Stats & Streak Tracking - Tracks streaks, accuracy, reaction times, pitch-class mistakes, and octave accuracy in browser localStorage per username. The current account flow is a local prototype, not secure server-backed authentication.
+Stats & Streak Tracking - Express calculates account statistics from saved guesses. Registration uses BCrypt password hashing; login uses an HttpOnly session cookie. Data is in server memory until database support is added.
 
-Leaderboard & Notifications - Shows locally saved high streaks. A simulated activity feed mixes sample peer updates with the current player's milestones; it is not connected to a WebSocket server.
+Leaderboard & Notifications - Loads high streaks from the public backend leaderboard. A simulated activity feed mixes sample peer updates with the current player's milestones; it is not connected to a WebSocket server.
 
-Daily Music Trivia - Displays curated music facts locally; no external trivia service is currently connected.
+Music Trivia - Fetches music questions from The Trivia API; players click to reveal the answer.
 
-AI Breakdown - A mocked AI Ear-Training Coach generates practice advice from the player's locally saved telemetry; it does not call an LLM service.
+AI Breakdown - A mocked AI Ear-Training Coach generates practice advice from the player's server-loaded telemetry; it does not call an LLM service.
 
 ### Technologies
 
-The project currently uses the technologies below as follows; planned backend integrations are identified as future work.
+The project uses the following technologies; database and WebSocket integrations remain future work.
 
 - **HTML** - HTML for the piano keys, control buttons, score displays, and navigation in the menu.
 - **CSS** - Styles the app with a dark theme, piano-key feedback states, and responsive layouts for mobile and desktop.
 - **React** - React components and hooks power the interactive pages, game state, and user interface updates.
 - **Web Audio API** - A browser oscillator synthesizer plays single notes, major/minor chords, and reference C4 across a three-octave C3-B5 range.
-- **Service (future work)** - A backend service could handle score submissions, account authentication, and third-party music trivia requests. No service endpoint is currently connected.
-- **DB/Login (prototype)** - The username and game data are stored locally in the browser. MongoDB and secure server-backed authentication are future work.
+- **Service** - Node.js and Express serve the React build and provide authentication, attempts, personal statistics, and leaderboard endpoints. React fetches music trivia directly from a third-party API.
+- **DB/Login** - BCrypt hashes passwords and server-side sessions authenticate accounts. Accounts and game data live in server memory; MongoDB persistence is future work.
 - **WebSocket (mocked)** - The Play page simulates peer activity and displays local-player milestones. There is no WebSocket server or connection yet.
 
 
@@ -138,14 +161,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
-- [ ] **Uses BCrypt to hash passwords** - I did not complete this part of the deliverable.
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Node.js/Express HTTP service** - Express listens on port 4000 and provides JSON API routes.
+- [x] **Static middleware for frontend** - Express static middleware serves the Vite dist directory with a React Router fallback.
+- [x] **Calls to third party endpoints** - The React Home page fetches music questions from The Trivia API.
+- [x] **Backend service endpoints** - Added authenticated attempts and personal statistics, plus a public leaderboard.
+- [x] **Frontend calls service endpoints** - React uses fetch for accounts, session restoration, game saves, statistics, and rankings.
+- [x] **Supports registration, login, logout, and restricted endpoint** - Session cookies authenticate /api/user/me, /api/stats, and POST /api/attempts; logout invalidates the session.
+- [x] **Uses BCrypt to hash passwords** - Registration hashes passwords with bcryptjs; login verifies them with bcrypt.compare.
 
 ## 🚀 DB deliverable
 
