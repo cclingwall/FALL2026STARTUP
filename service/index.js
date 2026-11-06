@@ -5,10 +5,12 @@ const port = 4000;
 const path = require('node:path');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
+const { pitchClasses, supportedModes, octaveNumbers, calculateProfile } = require('./telemetry');
 
 // Temporary storage: accounts disappear when the server restarts.
 const users = new Map();
 const sessions = new Map();
+const playerAttempts = new Map();
 const sessionDurationMs = 24 * 60 * 60 * 1000; // 24 hours
 
 
@@ -153,6 +155,60 @@ app.delete('/api/auth/logout', (req, res) => {
   res.sendStatus(204);
 });
 
+// Identity comes from the session, not a username in the request body.
+app.post('/api/attempts', requireAuth, (req, res) => {
+  const { mode, targetNote, guessedNote, targetOctave, responseTimeMs } = req.body ?? {};
+
+  if (
+    !supportedModes.includes(mode) ||
+    !pitchClasses.includes(targetNote) ||
+    !pitchClasses.includes(guessedNote) ||
+    !octaveNumbers.includes(targetOctave) ||
+    !Number.isFinite(responseTimeMs) ||
+    responseTimeMs < 0
+  ) {
+    return res.status(400).json({ message: 'Invalid game attempt.' });
+  }
+
+  const userKey = req.user.username.toLowerCase();
+  const attempts = playerAttempts.get(userKey) || [];
+  attempts.push({
+    mode, targetNote, guessedNote, targetOctave, responseTimeMs,
+    isCorrect: targetNote === guessedNote,
+    timestamp: new Date().toISOString(),
+  });
+  playerAttempts.set(userKey, attempts);
+  res.status(201).json({ profile: calculateProfile(attempts) });
+});
+
+app.get('/api/stats', requireAuth, (req, res) => {
+  const attempts = playerAttempts.get(req.user.username.toLowerCase()) || [];
+  res.json(calculateProfile(attempts));
+});
+
+app.get('/api/leaderboard', (req, res) => {
+  const scores = [];
+  for (const [userKey, attempts] of playerAttempts) {
+    const user = users.get(userKey);
+    const profile = calculateProfile(attempts);
+    if (!user || profile.bestStreak === 0) continue;
+
+    let streak = 0;
+    let dateRecorded = '';
+    for (const attempt of attempts) {
+      streak = attempt.isCorrect ? streak + 1 : 0;
+      if (streak === profile.bestStreak) {
+        dateRecorded = attempt.timestamp.slice(0, 10);
+        break;
+      }
+    }
+
+    scores.push({ name: user.username, highestStreak: profile.bestStreak, dateRecorded });
+  }
+  scores.sort((a, b) => b.highestStreak - a.highestStreak || a.name.localeCompare(b.name));
+  res.json(scores);
+});
+
 app.use('/api', (req, res) => {
   res.status(404).json({ message: 'API endpoint not found' });
 });
@@ -166,6 +222,11 @@ app.get('/{*page}', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Pitch Royale service running at http://localhost:${port}`);
-});
+// Importing the app for tests does not start the normal port-4000 server.
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Pitch Royale service running at http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
