@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { noteFrequencies, playChord, playNote, playReferenceC } from './sound.js';
-import { saveAttemptEvent } from '../utils/telemetryStorage.js';
+import { submitAttempt } from '../utils/gameService.js';
 
 const semitoneMap = {
   C: 0,
@@ -35,14 +35,27 @@ export function useGameSession(userName) {
   const [attemptEvents, setAttemptEvents] = useState([]);
   const [flashingKey, setFlashingKey] = useState(null);
   const [feedback, setFeedback] = useState('Choose a mode, then play a challenge.');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const [saveError, setSaveError] = useState('');
+  const saveInProgress = useRef(false);
+  const mounted = useRef(true);
   const toneStartTime = useRef(null);
   const referenceUsed = useRef(false);
   const keyFlashTimeout = useRef(null);
 
-  useEffect(() => () => window.clearTimeout(keyFlashTimeout.current), []);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      window.clearTimeout(keyFlashTimeout.current);
+    };
+  }, []);
 
   // Play a random note or chord from the full three-octave range.
   const handlePlayChallenge = async () => {
+    // Finish each save before starting another challenge to preserve attempt order.
+    if (saveInProgress.current) return;
     const selectedNote = playableNotes[Math.floor(Math.random() * playableNotes.length)];
     const quality = gameMode === 'chords' ? (Math.random() < 0.5 ? 'major' : 'minor') : null;
     const nextTarget = { ...splitTargetNote(selectedNote), quality };
@@ -93,14 +106,9 @@ export function useGameSession(userName) {
     const resultMessage = isCorrect
       ? `Correct! ${targetLabel} identified in ${responseSeconds}s (+1 Streak).`
       : `Not quite. It was ${targetLabel}; your response took ${responseSeconds}s.`;
-    let telemetryError = '';
-
+    // Consume the challenge synchronously so rapid clicks cannot submit it twice.
+    toneStartTime.current = null;
     setAttemptEvents((events) => [...events, attemptEvent]);
-    try {
-      saveAttemptEvent(userName, attemptEvent);
-    } catch (error) {
-      telemetryError = ` Could not save telemetry: ${error.message}`;
-    }
 
     setCurrentStreak(isCorrect ? currentStreak + 1 : 0);
     setFlashingKey({ note: guessedNote, result: isCorrect ? 'key-correct' : 'key-wrong' });
@@ -109,7 +117,31 @@ export function useGameSession(userName) {
     setTargetNote(null);
     toneStartTime.current = null;
     referenceUsed.current = false;
-    setFeedback(`${resultMessage}${telemetryError}`);
+    setFeedback(resultMessage);
+
+    setSaveError('');
+    if (userName) {
+      saveInProgress.current = true;
+      setIsSaving(true);
+      setSaveMessage('Saving result...');
+      // Keep audio and answer feedback immediate while the save runs separately.
+      submitAttempt(attemptEvent)
+        .then(() => {
+          if (mounted.current) setSaveMessage('Result saved.');
+        })
+        .catch((error) => {
+          if (mounted.current) {
+            setSaveMessage('');
+            setSaveError('Could not save this result. ' + error.message);
+          }
+        })
+        .finally(() => {
+          saveInProgress.current = false;
+          if (mounted.current) setIsSaving(false);
+        });
+    } else {
+      setSaveMessage('Guest practice — log in to save results.');
+    }
 
     try {
       await playNote(`${guessedNote}${targetNote.octave}`);
@@ -157,6 +189,9 @@ export function useGameSession(userName) {
     attemptEvents,
     flashingKey,
     feedback,
+    isSaving,
+    saveMessage,
+    saveError,
     handlePlayChallenge,
     handleGuess,
     handlePlayReference,

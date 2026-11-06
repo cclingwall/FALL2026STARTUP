@@ -13,6 +13,9 @@ export function Play({ userName }) {
     attemptEvents,
     flashingKey,
     feedback,
+    isSaving,
+    saveMessage,
+    saveError,
     handlePlayChallenge,
     handleGuess,
     handlePlayReference,
@@ -100,7 +103,7 @@ export function Play({ userName }) {
                 </button>
               </div>
               <div className="play-actions">
-                <button type="button" onClick={handlePlayChallenge}>
+                <button type="button" onClick={handlePlayChallenge} disabled={isSaving}>
                   Play {gameMode === 'chords' ? 'Chord' : 'Note'}
                 </button>
                 <button
@@ -138,6 +141,8 @@ export function Play({ userName }) {
               <span className="current-streak" aria-live="polite">Streak: {currentStreak}</span>
             </div>
             <p className="attempt-count">Attempts this session: {attemptCount}</p>
+            <p role="status">{saveMessage || (!userName ? 'Guest practice — log in to save results.' : '')}</p>
+            {saveError && <p role="alert">{saveError}</p>}
           </section>
         </section>
 

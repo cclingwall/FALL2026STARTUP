@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getLeaderboardScores, getTelemetryProfile } from '../utils/telemetryStorage.js';
+import { fetchLeaderboard, fetchPlayerStats } from '../utils/gameService.js';
 import './scores.css';
 
 const intervalsFromC = {
@@ -89,28 +89,42 @@ export function Scores({ userName }) {
   const displayName = userName || 'Guest';
   const [profile, setProfile] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [storageError, setStorageError] = useState('');
+  const [statsError, setStatsError] = useState('');
+  const [leaderboardError, setLeaderboardError] = useState('');
+  const [statsLoading, setStatsLoading] = useState(Boolean(userName));
+  const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+  const [reload, setReload] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [coachInsight, setCoachInsight] = useState('');
   const [coachError, setCoachError] = useState('');
 
   useEffect(() => {
+    const controller = new AbortController();
+    setLeaderboard([]);
+    setLeaderboardError('');
+    setLeaderboardLoading(true);
+    fetchLeaderboard(controller.signal)
+      .then((data) => { if (!controller.signal.aborted) setLeaderboard(data); })
+      .catch((error) => { if (!controller.signal.aborted) setLeaderboardError(error.message); })
+      .finally(() => { if (!controller.signal.aborted) setLeaderboardLoading(false); });
+    return () => controller.abort();
+  }, [userName, reload]);
+
+  useEffect(() => {
+    const controller = new AbortController();
     setProfile(null);
+    setStatsError('');
     setCoachInsight('');
     setCoachError('');
-    try {
-      setProfile(getTelemetryProfile(displayName));
-      setLeaderboard(
-        [...getLeaderboardScores()].sort((scoreA, scoreB) =>
-          scoreB.highestStreak - scoreA.highestStreak
-        )
-      );
-      setStorageError('');
-    } catch (error) {
-      setProfile(null);
-      setStorageError(`Could not load saved stats: ${error.message}`);
+    setStatsLoading(Boolean(userName));
+    if (userName) {
+      fetchPlayerStats(controller.signal)
+        .then((data) => { if (!controller.signal.aborted) setProfile(data); })
+        .catch((error) => { if (!controller.signal.aborted) setStatsError(error.message); })
+        .finally(() => { if (!controller.signal.aborted) setStatsLoading(false); });
     }
-  }, [displayName]);
+    return () => controller.abort();
+  }, [userName, reload]);
 
   const handleCoachAnalysis = async () => {
     if (!profile) {
@@ -139,6 +153,14 @@ export function Scores({ userName }) {
         {/* Leaderboard table */}
         <section className="col-12 col-xl-8 luxury-panel" aria-labelledby="leaderboard-heading">
           <h2 id="leaderboard-heading">Leaderboard</h2>
+          {leaderboardLoading && <p role="status">Loading leaderboard...</p>}
+          {leaderboardError && <p role="alert">{leaderboardError}</p>}
+          {!leaderboardLoading && !leaderboardError && leaderboard.length === 0 && (
+            <p>No scores yet. Be the first to record a correct guess!</p>
+          )}
+          <button type="button" disabled={leaderboardLoading || statsLoading} onClick={() => setReload((value) => value + 1)}>
+            Refresh Scores
+          </button>
           <div className="img-zoom-wrapper">
             <img
               src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80"
@@ -179,7 +201,10 @@ export function Scores({ userName }) {
         {/* Personal stats summary */}
         <section className="col-12 col-xl-4 luxury-panel" aria-labelledby="personal-stats-heading">
           <h2 id="personal-stats-heading">{displayName}&apos;s Personal Stats</h2>
-          {storageError && <p role="alert">{storageError}</p>}
+          {!userName && <p>Log in to view your personal statistics. Guest practice is not saved.</p>}
+          {statsLoading && <p role="status">Loading your statistics...</p>}
+          {statsError && <p role="alert">{statsError}</p>}
+          {profile?.gamesPlayed === 0 && <p>No saved attempts yet. Play a challenge to get started.</p>}
           {profile && (
             <>
               <ul>
@@ -236,7 +261,7 @@ export function Scores({ userName }) {
                 </ul>
               </details>
               <section className="ai-coach" aria-labelledby="ai-coach-heading">
-                <h3 id="ai-coach-heading">AI Ear-Training Coach</h3>
+                <h3 id="ai-coach-heading">AI Ear-Training Coach (Mock)</h3>
                 <p>Get practice suggestions based on your saved session telemetry.</p>
                 <button type="button" onClick={handleCoachAnalysis} disabled={isAnalyzing}>
                   {isAnalyzing ? 'Analyzing session telemetry...' : 'Analyze My Ear (AI Coach)'}
