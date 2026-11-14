@@ -10,7 +10,6 @@ const { pitchClasses, supportedModes, octaveNumbers, calculateProfile } = requir
 // Temporary storage: accounts disappear when the server restarts.
 const users = new Map();
 const sessions = new Map();
-const playerAttempts = new Map();
 const sessionDurationMs = 24 * 60 * 60 * 1000; // 24 hours
 
 
@@ -156,6 +155,10 @@ app.delete('/api/auth/logout', (req, res) => {
 });
 
 // Identity comes from the session, not a username in the request body.
+function loadAttempts(filter) {
+  return app.locals.attemptsCollection.find(filter).sort({ timestamp: 1, _id: 1 }).toArray();
+}
+
 app.post('/api/attempts', requireAuth, async (req, res) => {
   const { mode, targetNote, guessedNote, targetOctave, responseTimeMs } = req.body ?? {};
 
@@ -178,29 +181,34 @@ app.post('/api/attempts', requireAuth, async (req, res) => {
   };
 
   try {
-    await app.locals.attemptsCollection.insertOne({ userKey, ...attempt });
+    await app.locals.attemptsCollection.insertOne({ userKey, username: req.user.username, ...attempt });
   } catch {
     console.error('Could not save game attempt to MongoDB.');
     return res.status(503).json({ message: 'Could not save your game attempt.' });
   }
 
-  const attempts = playerAttempts.get(userKey) || [];
-  attempts.push(attempt);
-  playerAttempts.set(userKey, attempts);
+  const attempts = await loadAttempts({ userKey });
   res.status(201).json({ profile: calculateProfile(attempts) });
 });
 
-app.get('/api/stats', requireAuth, (req, res) => {
-  const attempts = playerAttempts.get(req.user.username.toLowerCase()) || [];
+app.get('/api/stats', requireAuth, async (req, res) => {
+  const userKey = req.user.username.toLowerCase();
+  const attempts = await loadAttempts({ userKey });
   res.json(calculateProfile(attempts));
 });
 
-app.get('/api/leaderboard', (req, res) => {
+app.get('/api/leaderboard', async (req, res) => {
+  const attemptsByPlayer = new Map();
+  for (const attempt of await loadAttempts({})) {
+    const { userKey } = attempt;
+    if (!attemptsByPlayer.has(userKey)) attemptsByPlayer.set(userKey, []);
+    attemptsByPlayer.get(userKey).push(attempt);
+  }
+
   const scores = [];
-  for (const [userKey, attempts] of playerAttempts) {
-    const user = users.get(userKey);
+  for (const [userKey, attempts] of attemptsByPlayer) {
     const profile = calculateProfile(attempts);
-    if (!user || profile.bestStreak === 0) continue;
+    if (profile.bestStreak === 0) continue;
 
     let streak = 0;
     let dateRecorded = '';
@@ -212,7 +220,9 @@ app.get('/api/leaderboard', (req, res) => {
       }
     }
 
-    scores.push({ name: user.username, highestStreak: profile.bestStreak, dateRecorded });
+    // Earlier attempt records only stored the normalized username.
+    const name = attempts.find(attempt => attempt.username)?.username ?? users.get(userKey)?.username ?? userKey;
+    scores.push({ name, highestStreak: profile.bestStreak, dateRecorded });
   }
   scores.sort((a, b) => b.highestStreak - a.highestStreak || a.name.localeCompare(b.name));
   res.json(scores);

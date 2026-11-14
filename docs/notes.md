@@ -83,3 +83,14 @@ MongoDB to acknowledge the write before updating the in-memory history or
 returning the updated profile. A failed write returns HTTP 503 and leaves the
 in-memory history alone. Stats and leaderboard still read the in-memory history
 until the read paths are switched to MongoDB.
+
+### Reading game attempts
+
+MongoDB is now the source for player stats, the profile returned after a
+guess, and the leaderboard. Sort by timestamp and then document ID so streaks
+use a consistent order. New records include the display username so the
+leaderboard can show it after a restart. Older records fall back to the
+normalized username when no display name is available.
+
+Accounts still live in memory at this point. Complete account persistence
+before deploying these database-backed stats to production.

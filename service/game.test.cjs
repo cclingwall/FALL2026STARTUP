@@ -10,6 +10,18 @@ test('game API validates attempts, isolates players, and derives scores from his
       if (databaseUnavailable) throw new Error('Database unavailable');
       savedAttempts.push(attempt);
     },
+    find({ userKey }) {
+      return {
+        sort(order) {
+          assert.deepEqual(order, { timestamp: 1, _id: 1 });
+          return {
+            async toArray() {
+              return savedAttempts.filter(attempt => userKey === undefined || attempt.userKey === userKey);
+            },
+          };
+        },
+      };
+    },
   };
   const server = app.listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
@@ -47,6 +59,7 @@ test('game API validates attempts, isolates players, and derives scores from his
     assert.deepEqual(savedAttempts, [{
       ...base,
       userKey: 'alice',
+      username: 'Alice',
       isCorrect: true,
       timestamp: savedAttempts[0].timestamp,
     }]);
@@ -74,8 +87,9 @@ test('game API validates attempts, isolates players, and derives scores from his
       await request('/api/attempts', { method: 'POST', cookie: bob, body: { ...base, mode: 'chords' } });
     }
     assert.equal((await request('/api/stats', { cookie: bob })).data.chordCorrect, 2);
+    savedAttempts.push({ ...savedAttempts[0], userKey: 'oldplayer', username: undefined });
     const board = (await request('/api/leaderboard')).data;
-    assert.deepEqual(board.map(row => [row.name, row.highestStreak]), [['Bob', 2], ['Alice', 1]]);
+    assert.deepEqual(board.map(row => [row.name, row.highestStreak]), [['Bob', 2], ['Alice', 1], ['oldplayer', 1]]);
     assert.equal(board[0].dateRecorded, new Date().toISOString().slice(0, 10));
     assert.deepEqual(Object.keys(board[0]).sort(), ['dateRecorded', 'highestStreak', 'name']);
     assert.equal((await request('/api/auth/logout', { method: 'DELETE', cookie: alice })).status, 204);
