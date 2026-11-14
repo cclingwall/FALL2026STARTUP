@@ -156,7 +156,7 @@ app.delete('/api/auth/logout', (req, res) => {
 });
 
 // Identity comes from the session, not a username in the request body.
-app.post('/api/attempts', requireAuth, (req, res) => {
+app.post('/api/attempts', requireAuth, async (req, res) => {
   const { mode, targetNote, guessedNote, targetOctave, responseTimeMs } = req.body ?? {};
 
   if (
@@ -171,12 +171,21 @@ app.post('/api/attempts', requireAuth, (req, res) => {
   }
 
   const userKey = req.user.username.toLowerCase();
-  const attempts = playerAttempts.get(userKey) || [];
-  attempts.push({
+  const attempt = {
     mode, targetNote, guessedNote, targetOctave, responseTimeMs,
     isCorrect: targetNote === guessedNote,
     timestamp: new Date().toISOString(),
-  });
+  };
+
+  try {
+    await app.locals.attemptsCollection.insertOne({ userKey, ...attempt });
+  } catch {
+    console.error('Could not save game attempt to MongoDB.');
+    return res.status(503).json({ message: 'Could not save your game attempt.' });
+  }
+
+  const attempts = playerAttempts.get(userKey) || [];
+  attempts.push(attempt);
   playerAttempts.set(userKey, attempts);
   res.status(201).json({ profile: calculateProfile(attempts) });
 });
@@ -227,7 +236,8 @@ if (require.main === module) {
   const { connectDatabase } = require('./database');
 
   connectDatabase()
-    .then(() => {
+    .then(database => {
+      app.locals.attemptsCollection = database.collection('attempts');
       console.log('Connected to the Pitch Royale database.');
       app.listen(port, () => {
         console.log(`Pitch Royale service running at http://localhost:${port}`);

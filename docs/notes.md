@@ -74,3 +74,12 @@ The real config stays out of Git and must be provisioned separately at
 Run `npm start` and check for the database connection message before opening
 `http://localhost:4000/api/health`. Startup pings Atlas before opening port 4000.
 Atlas shows the new database after its first write.
+
+### Saving game attempts
+
+The attempt endpoint validates the guess, takes the player identity from their
+session, and writes the result to MongoDB's `attempts` collection. It waits for
+MongoDB to acknowledge the write before updating the in-memory history or
+returning the updated profile. A failed write returns HTTP 503 and leaves the
+in-memory history alone. Stats and leaderboard still read the in-memory history
+until the read paths are switched to MongoDB.

@@ -3,6 +3,14 @@ const assert = require('node:assert/strict');
 const app = require('./index');
 
 test('game API validates attempts, isolates players, and derives scores from history', async () => {
+  const savedAttempts = [];
+  let databaseUnavailable = false;
+  app.locals.attemptsCollection = {
+    async insertOne(attempt) {
+      if (databaseUnavailable) throw new Error('Database unavailable');
+      savedAttempts.push(attempt);
+    },
+  };
   const server = app.listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
   const origin = `http://127.0.0.1:${server.address().port}`;
@@ -36,10 +44,23 @@ test('game API validates attempts, isolates players, and derives scores from his
     assert.equal(submitted.data.profile.bestStreak, 1);
     assert.equal(submitted.data.profile.singleCorrect, 1);
     assert.equal(submitted.data.profile.avgResponseTimeMs, 800);
+    assert.deepEqual(savedAttempts, [{
+      ...base,
+      userKey: 'alice',
+      isCorrect: true,
+      timestamp: savedAttempts[0].timestamp,
+    }]);
+    assert.ok(Number.isFinite(Date.parse(savedAttempts[0].timestamp)));
+    assert.notEqual(savedAttempts[0].timestamp, '1900-01-01');
     assert.equal((await request('/api/stats', { cookie: bob })).data.gamesPlayed, 0);
     for (const body of [[], {}, { ...base, targetNote: 'INVALID' }, { ...base, guessedNote: '__proto__' }, { ...base, mode: 'unknown' }, { ...base, targetOctave: 9 }, { ...base, responseTimeMs: -1 }, { ...base, responseTimeMs: '800' }]) {
       assert.equal((await request('/api/attempts', { method: 'POST', cookie: alice, body })).status, 400);
     }
+    assert.equal(savedAttempts.length, 1);
+    databaseUnavailable = true;
+    const failed = await request('/api/attempts', { method: 'POST', cookie: alice, body: base });
+    databaseUnavailable = false;
+    assert.equal(failed.status, 503);
     assert.equal((await request('/api/stats', { cookie: alice })).data.gamesPlayed, 1);
     await request('/api/attempts', { method: 'POST', cookie: alice, body: { ...base, guessedNote: 'D', responseTimeMs: 1000 } });
     await request('/api/attempts', { method: 'POST', cookie: alice, body: base });
