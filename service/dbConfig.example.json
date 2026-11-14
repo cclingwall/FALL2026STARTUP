@@ -1,0 +1,5 @@
+{
+  "userName": "your-atlas-database-user",
+  "password": "your-atlas-database-password",
+  "hostname": "your-cluster.mongodb.net"
+}

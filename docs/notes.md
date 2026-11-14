@@ -58,3 +58,19 @@ The Live Activity Feed in `src/play/play.jsx` begins with sample player messages
 ### Mock AI Ear-Training Coach
 
 The Scores page passes the player's aggregated telemetry to a local mock coach function. It waits briefly to show a loading state, then derives coaching text from the player's reaction time, strongest interval, and areas to practice. No AI model, external endpoint, or API key is used. The async function is shaped so it can later be replaced by a backend request.
+
+## Startup DB connection
+
+Pitch Royale shares the Atlas cluster with Simon DB. Pitch Royale selects the
+`pitch_royale` database and Simon selects `simon`. The Node driver manages a
+connection pool, so the service can reuse one MongoClient across requests.
+
+Copy `service/dbConfig.example.json` to `service/dbConfig.json` and fill in the
+Atlas hostname and database user credentials. The database user needs read and
+write access to `pitch_royale`, and Atlas must allow the machine's outbound IP.
+The real config stays out of Git and must be provisioned separately at
+`~/services/startup/service/dbConfig.json` on the deployment server.
+
+Run `npm start` and check for the database connection message before opening
+`http://localhost:4000/api/health`. Startup pings Atlas before opening port 4000.
+Atlas shows the new database after its first write.

@@ -45,7 +45,7 @@ archive="$package_dir/startup.tgz"
 cleanup() { rm -f -- "$archive"; rmdir -- "$package_dir"; }
 trap cleanup EXIT
 # Explicitly include runtime files; never include the SSH key or local modules.
-tar -czf "$archive" package.json package-lock.json ecosystem.config.js service/index.js service/telemetry.js dist
+tar -czf "$archive" package.json package-lock.json ecosystem.config.js service/index.js service/database.js service/telemetry.js dist
 tar -tzf "$archive"
 if [[ "$check_only" == true ]]; then
   printf 'Local checks passed. Package verified; no server connection was made.\n'
@@ -68,6 +68,10 @@ set -euo pipefail
 export NVM_DIR="$HOME/.nvm"
 if [[ -s "$NVM_DIR/nvm.sh" ]]; then . "$NVM_DIR/nvm.sh"; fi
 cd "$HOME/services/startup"
+if [[ ! -f service/dbConfig.json ]]; then
+  printf 'Configure service/dbConfig.json on the server before deploying.\n' >&2
+  exit 1
+fi
 tar -xzf .incoming.tgz
 npm ci --omit=dev --no-audit --no-fund
 # Recreate this named process so an old course placeholder cannot retain its entry point.

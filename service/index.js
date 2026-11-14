@@ -224,9 +224,19 @@ app.get('/{*page}', (req, res) => {
 
 // Importing the app for tests does not start the normal port-4000 server.
 if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Pitch Royale service running at http://localhost:${port}`);
-  });
+  const { connectDatabase } = require('./database');
+
+  connectDatabase()
+    .then(() => {
+      console.log('Connected to the Pitch Royale database.');
+      app.listen(port, () => {
+        console.log(`Pitch Royale service running at http://localhost:${port}`);
+      });
+    })
+    .catch(() => {
+      console.error('MongoDB connection failed. Check service/dbConfig.json and Atlas network access.');
+      process.exit(1);
+    });
 }
 
 module.exports = app;
