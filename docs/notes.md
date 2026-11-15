@@ -143,3 +143,30 @@ private stats and the public leaderboard from the service.
 If the service reports that a session expired while saving or loading private
 stats, React clears the shared signed-in name and shows the sign-in link.
 Other service errors leave the current sign-in state intact.
+
+
+### Local end-to-end verification
+
+Ran `node --test service/game.test.cjs` and the React production build.
+The API test and build passed. For the browser check, ran the frontend
+and Node service locally against Atlas using two temporary accounts.
+
+1. Registered both accounts. A wrong password returned HTTP 401 and
+   showed the login error. The correct password returned HTTP 200.
+2. Saved a correct guess with the first account. The attempt returned
+   HTTP 201, the first account showed one saved game, and the second
+   account showed zero. Both could see the public leaderboard entry.
+3. Restarted the Node service and reloaded both browsers. The existing
+   cookies still worked, and both players saw the same stats as before.
+   Logout returned HTTP 204, cleared the signed-in state, and the account
+   endpoint returned HTTP 401 until the next sign-in.
+
+The Node inspector paused at the bcrypt password comparison during login.
+The Chrome Network panel can be used to confirm the login, attempt, stats,
+and logout responses. The automated browser run checked those responses
+through Chrome's debugging interface.
+
+To repeat locally, run `npm start` and `npm run dev` in separate terminals
+with the Atlas config set up. Use separate browser profiles for the two
+accounts so each keeps its own session cookie. Restart only the Node service
+before reloading the Scores page.
