@@ -140,6 +140,15 @@ export function Home({ userName, onAuthChange }) {
 
   return (
     <main className="home-page container py-5">
+      <p className="mb-3">
+        <a
+          href="https://github.com/cclingwall/FALL2026STARTUP"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Pitch Royale GitHub Repository
+        </a>
+      </p>
       <div className="row g-4">
         {/* Hero Carousel */}
         <section

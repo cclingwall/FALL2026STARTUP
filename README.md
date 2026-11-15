@@ -8,7 +8,7 @@ curtislingwall.click
 See [local setup and service deployment instructions](docs/deployment.md).
 Use `bash scripts/deployService.sh -n` to test and verify a deployment package
 locally. The service script deploys both Express and React; the old React script
-now forwards to it. Live deployment and public HTTPS checks are still pending.
+now forwards to it. Production deployment of the Startup DB update is pending.
 
 | Method | Endpoint | Login required | Purpose |
 | --- | --- | --- | --- |
@@ -17,12 +17,12 @@ now forwards to it. Live deployment and public HTTPS checks are still pending.
 | POST | /api/auth/login | No | Issue HttpOnly session cookie |
 | DELETE | /api/auth/logout | No | Invalidate session and clear cookie |
 | GET | /api/user/me | Yes | Current account |
-| POST | /api/attempts | Yes | Validate and save a game guess |
+| POST | /api/attempts | Yes | Validate and save a game guess to MongoDB |
 | GET | /api/stats | Yes | Personal game statistics |
 | GET | /api/leaderboard | No | Rankings by best streak |
 
-Users, sessions, and attempts are held in server memory and reset on restart.
-Guest play is not saved. The frontend fetches music trivia directly from
+MongoDB stores accounts, sessions, and signed-in game attempts. Guest practice
+runs in the browser. The frontend fetches music trivia directly from
 [The Trivia API](https://the-trivia-api.com/), with click-to-reveal answers.
 
 
@@ -52,7 +52,7 @@ sequenceDiagram
     actor Player
     participant Play as Play page
     participant Audio as Web Audio API
-    participant Storage as Express service (in-memory data)
+    participant Storage as Express service and MongoDB
     participant Feed as Simulated activity feed
     participant Scores as Scores page / mock AI Coach
 
@@ -73,7 +73,7 @@ sequenceDiagram
 
 Piano & Sound Player - Plays randomized single notes or chords across three octaves. The user guesses with an interactive piano keyboard.
 
-Stats & Streak Tracking - Express calculates account statistics from saved guesses. Registration uses BCrypt password hashing; login uses an HttpOnly session cookie. Data is in server memory until database support is added.
+Stats & Streak Tracking - Express calculates account statistics from attempts stored in MongoDB. Registration hashes passwords with bcrypt, and login uses an HttpOnly session cookie.
 
 Leaderboard & Notifications - Loads high streaks from the public backend leaderboard. A simulated activity feed mixes sample peer updates with the current player's milestones; it is not connected to a WebSocket server.
 
@@ -83,14 +83,14 @@ AI Breakdown - A mocked AI Ear-Training Coach generates practice advice from the
 
 ### Technologies
 
-The project uses the following technologies; database and WebSocket integrations remain future work.
+Pitch Royale uses these technologies for gameplay, account access, and data storage.
 
 - **HTML** - HTML for the piano keys, control buttons, score displays, and navigation in the menu.
 - **CSS** - Styles the app with a dark theme, piano-key feedback states, and responsive layouts for mobile and desktop.
 - **React** - React components and hooks power the interactive pages, game state, and user interface updates.
 - **Web Audio API** - A browser oscillator synthesizer plays single notes, major/minor chords, and reference C4 across a three-octave C3-B5 range.
 - **Service** - Node.js and Express serve the React build and provide authentication, attempts, personal statistics, and leaderboard endpoints. React fetches music trivia directly from a third-party API.
-- **DB/Login** - BCrypt hashes passwords and server-side sessions authenticate accounts. Accounts and game data live in server memory; MongoDB persistence is future work.
+- **DB/Login** - MongoDB Atlas stores attempts, accounts with bcrypt password hashes, and expiring sessions.
 - **WebSocket (mocked)** - The Play page simulates peer activity and displays local-player milestones. There is no WebSocket server or connection yet.
 
 
@@ -174,9 +174,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Stores data in MongoDB** - I did not complete this part of the deliverable.
-- [ ] **Stores credentials in MongoDB** - I did not complete this part of the deliverable.
+- [X] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Stores data in MongoDB** - Signed-in guesses are saved to MongoDB, and the app reads them back to show personal stats and the public leaderboard.
+- [x] **Stores credentials in MongoDB** - Registration saves usernames with bcrypt password hashes in MongoDB, and login checks the submitted password against the stored hash.
 
 ## 🚀 WebSocket deliverable
 

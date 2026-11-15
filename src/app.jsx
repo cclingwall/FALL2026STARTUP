@@ -188,16 +188,7 @@ export default function App() {
 
       {/* Global Footer */}
       <footer>
-        <p>
-          Created by Curtis Lingwall |{' '}
-          <a
-            href="https://github.com/cclingwall/FALL2026STARTUP"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Pitch Royale GitHub Repository
-          </a>
-        </p>
+        <p>Created by Curtis Lingwall</p>
       </footer>
     </BrowserRouter>
   );

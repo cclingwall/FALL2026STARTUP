@@ -6,6 +6,11 @@ production dependencies. Run deployment commands in Git Bash on Windows.
 
 ## Local development
 
+Copy `service/dbConfig.example.json` to `service/dbConfig.json` and enter your
+Atlas database username, password, and cluster hostname. Pitch Royale uses the
+`pitch_royale` database in that cluster. Allow your local IP in Atlas, and keep
+the private configuration file out of Git.
+
 From the project root:
 
 ```bash
@@ -26,8 +31,8 @@ bash scripts/deployService.sh -n
 ```
 
 This checks the existing installed dependencies, tests the service, builds React, and lists a
-temporary deployment archive. It removes the temporary archive after checking
-it and preserves the local `dist` directory. No key is needed in this mode.
+temporary deployment archive. It rebuilds the local `dist` directory and
+removes the temporary archive after checking it. No key is needed in this mode.
 Run `npm ci` first if dependencies are not installed. Actual deployment uses
 `npm ci` before building and installs locked production dependencies remotely.
 
@@ -45,6 +50,12 @@ Production cookies require HTTPS. Use the public HTTPS address for account
 checks; plain HTTP access to port 4000 is only suitable for the health check.
 
 ## Deploy when ready
+
+Before deploying, create `~/services/startup/service` on the course server and
+put the private `dbConfig.json` there. Keep the file readable only by the service
+account. The Atlas database user needs read and write access to `pitch_royale`,
+including permission to create the session expiration index. The server's
+outbound IP must be allowed in Atlas. The deployment archive excludes credentials.
 
 From the project root, replace the example key path with your real key path:
 
@@ -66,6 +77,8 @@ The deployed structure is:
   ecosystem.config.js
   service/
     index.js
+    database.js
+    dbConfig.json  (provided separately)
     telemetry.js
   dist/
     index.html
@@ -75,14 +88,10 @@ The deployed structure is:
 The script installs production dependencies on the server, replaces the PM2
 `startup` process so its entry point is correct, checks `/api/health` on port
 4000, and saves the PM2 process list. Deployment briefly interrupts startup.
-It stops on errors and does not implement automatic rollback; inspect PM2 logs
-and redeploy a corrected version if a deployment fails. Stale files are not
-recursively deleted, and local build output is preserved.
+If deployment fails, inspect the PM2 logs and redeploy a corrected version.
 
-Accounts, sessions, and game attempts currently live in server memory. Every
-restart or deployment clears them. Multiple PM2 workers would not share this
-memory, which is why the configuration uses one instance. A database is future
-work.
+Accounts, sessions, and signed-in game attempts live in MongoDB. Accounts and
+attempts survive restarts. Sessions continue until logout or expiration.
 
 ## Check the public site after deployment
 
@@ -97,5 +106,5 @@ For troubleshooting, connect to the server and run `pm2 status` and
 `pm2 logs startup --lines 30 --nostream`. A 502 generally means the reverse
 proxy could not reach the backend; check the startup process and port 4000.
 
-Live deployment and public HTTPS verification have not yet been performed as
-part of this preparation.
+The Startup DB update was verified locally against Atlas. Repeat the checks
+above on the public HTTPS site after deploying this version.
