@@ -70,6 +70,7 @@ test('game API validates attempts, isolates players, and derives scores from his
   }
   const base = { mode: 'single', targetNote: 'C', guessedNote: 'C', targetOctave: 4, responseTimeMs: 800 };
   try {
+    assert.equal((await request('/api/user/me')).status, 401);
     assert.equal((await request('/api/stats')).status, 401);
     assert.equal((await request('/api/attempts', { method: 'POST', body: base })).status, 401);
     assert.deepEqual((await request('/api/leaderboard')).data, []);
@@ -88,7 +89,11 @@ test('game API validates attempts, isolates players, and derives scores from his
     assert.equal(wrongPassword.status, 401);
     assert.equal((await request('/api/stats', { cookie: bob })).data.gamesPlayed, 0);
     // Browser-supplied identity, correctness, streak, and timestamp are ignored.
-    const submitted = await request('/api/attempts', { method: 'POST', cookie: alice, body: { ...base, username: 'Bob', isCorrect: false, streakAtAttempt: 999, timestamp: '1900-01-01' } });
+    const submitted = await request('/api/attempts', {
+      method: 'POST',
+      cookie: alice,
+      body: { ...base, userKey: 'bob', username: 'Bob', isCorrect: false, streakAtAttempt: 999, timestamp: '1900-01-01' },
+    });
     assert.equal(submitted.status, 201);
     assert.equal(submitted.data.profile.bestStreak, 1);
     assert.equal(submitted.data.profile.singleCorrect, 1);
@@ -102,7 +107,12 @@ test('game API validates attempts, isolates players, and derives scores from his
     }]);
     assert.ok(Number.isFinite(Date.parse(savedAttempts[0].timestamp)));
     assert.notEqual(savedAttempts[0].timestamp, '1900-01-01');
-    assert.equal((await request('/api/stats', { cookie: bob })).data.gamesPlayed, 0);
+    const bobStats = await request('/api/stats?userKey=alice&username=Alice', { cookie: bob });
+    assert.equal(bobStats.status, 200);
+    assert.equal(bobStats.data.gamesPlayed, 0);
+    const bobAccount = await request('/api/user/me?userKey=alice', { cookie: bob });
+    assert.equal(bobAccount.status, 200);
+    assert.deepEqual(bobAccount.data, { username: 'Bob' });
     for (const body of [[], {}, { ...base, targetNote: 'INVALID' }, { ...base, guessedNote: '__proto__' }, { ...base, mode: 'unknown' }, { ...base, targetOctave: 9 }, { ...base, responseTimeMs: -1 }, { ...base, responseTimeMs: '800' }]) {
       assert.equal((await request('/api/attempts', { method: 'POST', cookie: alice, body })).status, 400);
     }

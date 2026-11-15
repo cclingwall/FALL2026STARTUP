@@ -49,7 +49,10 @@ async function requireAuth(req, res, next) {
     });
   }
 
-  req.user = user;
+  req.user = {
+    userKey: user._id,
+    username: user.username,
+  };
   next();
 }
 
@@ -183,7 +186,7 @@ app.post('/api/attempts', requireAuth, async (req, res) => {
     return res.status(400).json({ message: 'Invalid game attempt.' });
   }
 
-  const userKey = req.user.username.toLowerCase();
+  const { userKey, username } = req.user;
   const attempt = {
     mode, targetNote, guessedNote, targetOctave, responseTimeMs,
     isCorrect: targetNote === guessedNote,
@@ -191,7 +194,7 @@ app.post('/api/attempts', requireAuth, async (req, res) => {
   };
 
   try {
-    await app.locals.attemptsCollection.insertOne({ userKey, username: req.user.username, ...attempt });
+    await app.locals.attemptsCollection.insertOne({ userKey, username, ...attempt });
   } catch {
     console.error('Could not save game attempt to MongoDB.');
     return res.status(503).json({ message: 'Could not save your game attempt.' });
@@ -202,7 +205,7 @@ app.post('/api/attempts', requireAuth, async (req, res) => {
 });
 
 app.get('/api/stats', requireAuth, async (req, res) => {
-  const userKey = req.user.username.toLowerCase();
+  const { userKey } = req.user;
   const attempts = await loadAttempts({ userKey });
   res.json(calculateProfile(attempts));
 });

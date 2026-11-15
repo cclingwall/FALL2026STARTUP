@@ -117,3 +117,10 @@ sessions in the background. Logout deletes the session and clears the cookie.
 
 Sessions created before this change require a fresh sign-in. New sessions
 can be used after the service restarts until they expire or the player logs out.
+
+### Authorizing player routes
+
+The session middleware supplies the MongoDB account ID to protected routes.
+Attempt submissions and private stats use that ID to decide which player owns
+the data. The display username is only used as a label. The account, attempts,
+and stats routes require sign-in. The leaderboard still shows public scores.
