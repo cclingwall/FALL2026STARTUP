@@ -7,8 +7,7 @@ const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const { pitchClasses, supportedModes, octaveNumbers, calculateProfile } = require('./telemetry');
 
-// Temporary storage: accounts disappear when the server restarts.
-const users = new Map();
+// Active sessions live in memory and end when the service restarts.
 const sessions = new Map();
 const sessionDurationMs = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -16,7 +15,7 @@ const sessionDurationMs = 24 * 60 * 60 * 1000; // 24 hours
 app.use(express.json());
 app.use(cookieParser());
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const token = req.cookies.authToken;
   const session = sessions.get(token);
 
@@ -28,7 +27,10 @@ function requireAuth(req, res, next) {
     });
   }
 
-  const user = users.get(session.userKey);
+  const user = await app.locals.usersCollection.findOne(
+    { _id: session.userKey },
+    { projection: { username: 1 } },
+  );
 
   if (!user) {
     sessions.delete(token);
@@ -71,25 +73,21 @@ app.post('/api/auth/register', async (req, res) => {
   const name = username.trim();
   const userKey = name.toLowerCase();
 
-  if (users.has(userKey)) {
-    return res.status(409).json({
-      message: 'That username is already registered.',
-    });
-  }
-
   const passwordHash = await bcrypt.hash(password, 10);
-
-  // Another request could register this name while hashing was running.
-  if (users.has(userKey)) {
-    return res.status(409).json({
-      message: 'That username is already registered.',
+  try {
+    await app.locals.usersCollection.insertOne({
+      _id: userKey,
+      username: name,
+      passwordHash,
     });
-  }
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'That username is already registered.' });
+    }
 
-  users.set(userKey, {
-    username: name,
-    passwordHash,
-  });
+    console.error('Could not save account to MongoDB.');
+    return res.status(503).json({ message: 'Could not create your account.' });
+  }
 
   return res.status(201).json({ username: name });
 });
@@ -109,7 +107,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 
   const userKey = username.trim().toLowerCase();
-  const user = users.get(userKey);
+  const user = await app.locals.usersCollection.findOne({ _id: userKey });
 
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
     return res.status(401).json({
@@ -221,7 +219,11 @@ app.get('/api/leaderboard', async (req, res) => {
     }
 
     // Earlier attempt records only stored the normalized username.
-    const name = attempts.find(attempt => attempt.username)?.username ?? users.get(userKey)?.username ?? userKey;
+    let name = attempts.find(attempt => attempt.username)?.username;
+    if (!name) {
+      const user = await app.locals.usersCollection.findOne({ _id: userKey }, { projection: { username: 1 } });
+      name = user?.username ?? userKey;
+    }
     scores.push({ name, highestStreak: profile.bestStreak, dateRecorded });
   }
   scores.sort((a, b) => b.highestStreak - a.highestStreak || a.name.localeCompare(b.name));
@@ -248,6 +250,7 @@ if (require.main === module) {
   connectDatabase()
     .then(database => {
       app.locals.attemptsCollection = database.collection('attempts');
+      app.locals.usersCollection = database.collection('users');
       console.log('Connected to the Pitch Royale database.');
       app.listen(port, () => {
         console.log(`Pitch Royale service running at http://localhost:${port}`);

@@ -94,3 +94,15 @@ normalized username when no display name is available.
 
 Accounts still live in memory at this point. Complete account persistence
 before deploying these database-backed stats to production.
+
+### Saving player accounts
+
+The `users` collection stores each display username and a bcrypt password hash.
+The lowercase username is the document ID, so MongoDB's unique ID constraint
+also handles duplicate sign-ups that arrive at the same time. Login reads the
+account from MongoDB and compares the submitted password with its hash.
+Protected requests fetch the account identified by the session.
+
+Accounts created with this version survive a restart. Existing in-memory
+accounts are not migrated, and session cookies still require a fresh sign-in
+after a restart.

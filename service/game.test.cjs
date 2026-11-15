@@ -4,6 +4,18 @@ const app = require('./index');
 
 test('game API validates attempts, isolates players, and derives scores from history', async () => {
   const savedAttempts = [];
+  const savedUsers = new Map();
+  app.locals.usersCollection = {
+    async insertOne(user) {
+      if (savedUsers.has(user._id)) {
+        throw Object.assign(new Error('Duplicate key'), { code: 11000 });
+      }
+      savedUsers.set(user._id, user);
+    },
+    async findOne({ _id }) {
+      return savedUsers.get(_id) ?? null;
+    },
+  };
   let databaseUnavailable = false;
   app.locals.attemptsCollection = {
     async insertOne(attempt) {
@@ -49,6 +61,17 @@ test('game API validates attempts, isolates players, and derives scores from his
     assert.deepEqual((await request('/api/leaderboard')).data, []);
     const alice = await registerAndLogin('Alice');
     const bob = await registerAndLogin('Bob');
+    assert.match(savedUsers.get('alice').passwordHash, /^[$]2[aby][$]/);
+    assert.equal(Object.hasOwn(savedUsers.get('alice'), 'password'), false);
+    const duplicates = await Promise.all(['ALICE', ' alice '].map(username => (
+      request('/api/auth/register', { method: 'POST', body: { username, password: 'practice123' } })
+    )));
+    assert.deepEqual(duplicates.map(response => response.status), [409, 409]);
+    const wrongPassword = await request('/api/auth/login', {
+      method: 'POST',
+      body: { username: 'ALICE', password: 'wrong-password' },
+    });
+    assert.equal(wrongPassword.status, 401);
     assert.equal((await request('/api/stats', { cookie: bob })).data.gamesPlayed, 0);
     // Browser-supplied identity, correctness, streak, and timestamp are ignored.
     const submitted = await request('/api/attempts', { method: 'POST', cookie: alice, body: { ...base, username: 'Bob', isCorrect: false, streakAtAttempt: 999, timestamp: '1900-01-01' } });
