@@ -124,3 +124,11 @@ The session middleware supplies the MongoDB account ID to protected routes.
 Attempt submissions and private stats use that ID to decide which player owns
 the data. The display username is only used as a label. The account, attempts,
 and stats routes require sign-in. The leaderboard still shows public scores.
+
+### Restoring login in the interface
+
+The account form and session check use the same client code to handle network
+failures and invalid server responses. The app treats HTTP 401 from
+`/api/user/me` as signed out. If the session check fails for another reason,
+Retry checks the session again without reloading the page. The account form
+updates its signed-in state after successful login or logout.

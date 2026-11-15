@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './home.css';
+import { endSession, submitCredentials } from '../utils/authService.js';
 
 const heroSlides = [
   {
@@ -94,70 +95,48 @@ export function Home({ userName, onAuthChange }) {
   }, []);
 
   const handleSubmit = async (event) => {
-  event.preventDefault();
-  if (authPending) return;
+    event.preventDefault();
+    if (authPending) return;
 
-  const action = event.nativeEvent.submitter?.value || 'login';
+    const action = event.nativeEvent.submitter?.value === 'register' ? 'register' : 'login';
+    setAuthPending(true);
+    setAuthError('');
+    setAuthMessage('');
 
-  setAuthPending(true);
-  setAuthError('');
-  setAuthMessage('');
+    try {
+      const account = await submitCredentials(action, usernameInput.trim(), passwordInput);
+      setPasswordInput('');
 
-  try {
-    const response = await fetch(`/api/auth/${action}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: usernameInput.trim(),
-        password: passwordInput,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Account request failed.');
+      if (action === 'register') {
+        setAuthMessage('Account created! You can now log in.');
+      } else {
+        onAuthChange(account.username);
+      }
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setAuthPending(false);
     }
+  };
 
-    setPasswordInput('');
+  const handleLogout = async () => {
+    if (authPending) return;
 
-    if (action === 'register') {
-      setAuthMessage('Account created! You can now log in.');
-    } else {
-      onAuthChange(data.username);
+    setAuthPending(true);
+    setAuthError('');
+    setAuthMessage('');
+
+    try {
+      await endSession();
+      onAuthChange('');
+      setUsernameInput('');
+      setPasswordInput('');
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setAuthPending(false);
     }
-  } catch (error) {
-    setAuthError(error.message);
-  } finally {
-    setAuthPending(false);
-  }
-};
-
-const handleLogout = async () => {
-  if (authPending) return;
-
-  setAuthPending(true);
-  setAuthError('');
-  setAuthMessage('');
-
-  try {
-    const response = await fetch('/api/auth/logout', {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Could not log out. Please try again.');
-    }
-
-    onAuthChange('');
-    setUsernameInput('');
-    setPasswordInput('');
-  } catch (error) {
-    setAuthError(error.message);
-  } finally {
-    setAuthPending(false);
-  }
-};
+  };
 
   return (
     <main className="home-page container py-5">
@@ -239,6 +218,7 @@ const handleLogout = async () => {
                   id="username"
                   name="username"
                   autoComplete="username"
+                  disabled={authPending}
                   value={usernameInput}
                   onChange={(event) => setUsernameInput(event.target.value)}
                   required
@@ -250,6 +230,7 @@ const handleLogout = async () => {
                   id="password"
                   name="password"
                   autoComplete="current-password"
+                  disabled={authPending}
                   value={passwordInput}
                   onChange={(event) => setPasswordInput(event.target.value)}
                   required

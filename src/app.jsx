@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
+import { restoreAccount } from './utils/authService.js';
 
 import { Home } from './home/home.jsx';
 import { Play } from './play/play.jsx';
@@ -17,6 +18,7 @@ export default function App() {
   const [userName, setUserName] = useState('');
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState('');
+  const [sessionCheck, setSessionCheck] = useState(0);
 
   // Hide the intro and save that choice for the rest of this tab's session.
   const dismissIntro = () => {
@@ -30,42 +32,34 @@ export default function App() {
   };
 
   useEffect(() => {
-  const controller = new AbortController();
+    const controller = new AbortController();
 
-  async function restoreSession() {
-    try {
-      const response = await fetch('/api/user/me', {
-        signal: controller.signal,
-      });
-
-      if (response.status === 401) {
-        return; // No active session; stay logged out.
-      }
-
-      if (!response.ok) {
-        throw new Error('Could not check your login session.');
-      }
-
-      const user = await response.json();
-
-      if (!controller.signal.aborted) {
-        setUserName(user.username);
-      }
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        setAuthError('Could not check your session. Please refresh to retry.');
-      }
-    } finally {
-      if (!controller.signal.aborted) {
-        setAuthLoading(false);
+    async function restoreSession() {
+      try {
+        const account = await restoreAccount(controller.signal);
+        if (!controller.signal.aborted) {
+          setUserName(account?.username ?? '');
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setAuthError('Could not check your session. Please try again.');
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setAuthLoading(false);
+        }
       }
     }
+
+    restoreSession();
+    return () => controller.abort();
+  }, [sessionCheck]);
+
+  function retrySession() {
+    setAuthLoading(true);
+    setAuthError('');
+    setSessionCheck((count) => count + 1);
   }
-
-  restoreSession();
-
-  return () => controller.abort();
-}, []);
 
   // Close sidebar on Escape key
   useEffect(() => {
@@ -78,20 +72,20 @@ export default function App() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-if (authLoading) {
-  return <main className="container py-5">Checking your session...</main>;
-}
+  if (authLoading) {
+    return <main className="container py-5" role="status">Checking your session...</main>;
+  }
 
-if (authError) {
-  return (
-    <main className="container py-5">
-      <p role="alert">{authError}</p>
-      <button type="button" onClick={() => window.location.reload()}>
-        Retry
-      </button>
-    </main>
-  );
-}
+  if (authError) {
+    return (
+      <main className="container py-5">
+        <p role="alert">{authError}</p>
+        <button type="button" onClick={retrySession}>
+          Retry
+        </button>
+      </main>
+    );
+  }
 
   const closeSidebar = () => setSidebarOpen(false);
 
