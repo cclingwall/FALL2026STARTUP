@@ -132,3 +132,14 @@ failures and invalid server responses. The app treats HTTP 401 from
 `/api/user/me` as signed out. If the session check fails for another reason,
 Retry checks the session again without reloading the page. The account form
 updates its signed-in state after successful login or logout.
+
+### Showing saved results in the interface
+
+The play screen uses the profile returned by the attempt endpoint to show the
+total number of saved attempts. The session counter still counts practice in
+the current page. The saved-stats link opens the scores screen, which loads
+private stats and the public leaderboard from the service.
+
+If the service reports that a session expired while saving or loading private
+stats, React clears the shared signed-in name and shows the sign-in link.
+Other service errors leave the current sign-in state intact.

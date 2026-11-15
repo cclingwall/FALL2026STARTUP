@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PianoKeyboard } from './PianoKeyboard.jsx';
 import { useGameSession } from './useGameSession.js';
 import './play.css';
 
-export function Play({ userName }) {
+export function Play({ userName, onAuthChange }) {
   const {
     gameMode,
     hardMode,
@@ -20,7 +21,7 @@ export function Play({ userName }) {
     handleGuess,
     handlePlayReference,
     handleGameModeChange
-  } = useGameSession(userName);
+  } = useGameSession(userName, onAuthChange);
   const [liveActivity, setLiveActivity] = useState([
     { id: 'seed-sarah', message: 'Sarah just nailed a tritone (Gb5) in 0.8s!', type: 'peer' },
     { id: 'seed-ben', message: 'Ben hit a 15-note streak in Hard Mode!', type: 'peer' },
@@ -141,8 +142,10 @@ export function Play({ userName }) {
               <span className="current-streak" aria-live="polite">Streak: {currentStreak}</span>
             </div>
             <p className="attempt-count">Attempts this session: {attemptCount}</p>
-            <p role="status">{saveMessage || (!userName ? 'Guest practice — log in to save results.' : '')}</p>
+            <p role="status">{saveMessage}</p>
             {saveError && <p role="alert">{saveError}</p>}
+            {!isSaving && userName && saveMessage && <Link to="/scores">View saved stats</Link>}
+            {!userName && <p>Guest practice. <Link to="/">Log in to save results</Link></p>}
           </section>
         </section>
 

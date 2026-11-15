@@ -7,7 +7,9 @@ async function requestGame(path, options = {}) {
     throw new Error('Could not reach the game service. Please check your connection.');
   }
   if (response.status === 401) {
-    throw new Error('Your session expired. Log in again to access saved results.');
+    const error = new Error('Your session expired. Log in again to access saved results.');
+    error.status = response.status;
+    throw error;
   }
   const data = await response.json().catch(() => null);
   if (!response.ok) throw new Error(data?.message || 'The game service could not complete the request.');

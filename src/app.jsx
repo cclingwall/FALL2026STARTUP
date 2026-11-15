@@ -26,11 +26,6 @@ export default function App() {
     setIntroDismissed(true);
   };
 
-  // Update the shared name after a successful server response.
-  const handleAuthChange = (name) => {
-    setUserName(name);
-  };
-
   useEffect(() => {
     const controller = new AbortController();
 
@@ -178,15 +173,15 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={<Home userName={userName} onAuthChange={handleAuthChange} />}
+          element={<Home userName={userName} onAuthChange={setUserName} />}
         />
         <Route
           path="/play"
-          element={<Play userName={userName} onAuthChange={handleAuthChange} />}
+          element={<Play userName={userName} onAuthChange={setUserName} />}
         />
         <Route
           path="/scores"
-          element={<Scores userName={userName} onAuthChange={handleAuthChange} />}
+          element={<Scores userName={userName} onAuthChange={setUserName} />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>

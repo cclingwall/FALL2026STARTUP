@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchLeaderboard, fetchPlayerStats } from '../utils/gameService.js';
 import './scores.css';
 
@@ -85,7 +86,7 @@ export async function getAICoachInsights(telemetryPayload) {
   return generateMockAICoachResponse(telemetryPayload);
 }
 
-export function Scores({ userName }) {
+export function Scores({ userName, onAuthChange }) {
   const displayName = userName || 'Guest';
   const [profile, setProfile] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
@@ -108,7 +109,7 @@ export function Scores({ userName }) {
       .catch((error) => { if (!controller.signal.aborted) setLeaderboardError(error.message); })
       .finally(() => { if (!controller.signal.aborted) setLeaderboardLoading(false); });
     return () => controller.abort();
-  }, [userName, reload]);
+  }, [reload]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -120,11 +121,15 @@ export function Scores({ userName }) {
     if (userName) {
       fetchPlayerStats(controller.signal)
         .then((data) => { if (!controller.signal.aborted) setProfile(data); })
-        .catch((error) => { if (!controller.signal.aborted) setStatsError(error.message); })
+        .catch((error) => {
+          if (controller.signal.aborted) return;
+          if (error.status === 401) onAuthChange('');
+          else setStatsError(error.message);
+        })
         .finally(() => { if (!controller.signal.aborted) setStatsLoading(false); });
     }
     return () => controller.abort();
-  }, [userName, reload]);
+  }, [userName, reload, onAuthChange]);
 
   const handleCoachAnalysis = async () => {
     if (!profile) {
@@ -201,7 +206,7 @@ export function Scores({ userName }) {
         {/* Personal stats summary */}
         <section className="col-12 col-xl-4 luxury-panel" aria-labelledby="personal-stats-heading">
           <h2 id="personal-stats-heading">{displayName}&apos;s Personal Stats</h2>
-          {!userName && <p>Log in to view your personal statistics. Guest practice is not saved.</p>}
+          {!userName && <p><Link to="/">Log in</Link> to view your personal statistics. Guest practice is not saved.</p>}
           {statsLoading && <p role="status">Loading your statistics...</p>}
           {statsError && <p role="alert">{statsError}</p>}
           {profile?.gamesPlayed === 0 && <p>No saved attempts yet. Play a challenge to get started.</p>}

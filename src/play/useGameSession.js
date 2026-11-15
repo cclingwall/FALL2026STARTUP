@@ -27,7 +27,7 @@ function splitTargetNote(noteName) {
   return { note: match[1], octave: Number(match[2]) };
 }
 
-export function useGameSession(userName) {
+export function useGameSession(userName, onAuthChange) {
   const [gameMode, setGameMode] = useState('single');
   const [hardMode, setHardMode] = useState(false);
   const [targetNote, setTargetNote] = useState(null);
@@ -126,11 +126,14 @@ export function useGameSession(userName) {
       setSaveMessage('Saving result...');
       // Keep audio and answer feedback immediate while the save runs separately.
       submitAttempt(attemptEvent)
-        .then(() => {
-          if (mounted.current) setSaveMessage('Result saved.');
+        .then(({ profile }) => {
+          if (mounted.current) {
+            setSaveMessage(`Result saved. Total saved attempts: ${profile.gamesPlayed}.`);
+          }
         })
         .catch((error) => {
           if (mounted.current) {
+            if (error.status === 401) onAuthChange('');
             setSaveMessage('');
             setSaveError('Could not save this result. ' + error.message);
           }
@@ -139,8 +142,6 @@ export function useGameSession(userName) {
           saveInProgress.current = false;
           if (mounted.current) setIsSaving(false);
         });
-    } else {
-      setSaveMessage('Guest practice — log in to save results.');
     }
 
     try {
