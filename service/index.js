@@ -1,5 +1,5 @@
 const express = require('express');
-const { randomBytes } = require('node:crypto');
+const { createHash, randomBytes } = require('node:crypto');
 const app = express();
 const port = 4000;
 const path = require('node:path');
@@ -7,20 +7,31 @@ const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const { pitchClasses, supportedModes, octaveNumbers, calculateProfile } = require('./telemetry');
 
-// Active sessions live in memory and end when the service restarts.
-const sessions = new Map();
 const sessionDurationMs = 24 * 60 * 60 * 1000; // 24 hours
 
 
 app.use(express.json());
 app.use(cookieParser());
 
-async function requireAuth(req, res, next) {
-  const token = req.cookies.authToken;
-  const session = sessions.get(token);
+function hashSessionToken(token) {
+  return createHash('sha256').update(token).digest('hex');
+}
 
-  if (!session || session.expiresAt <= Date.now()) {
-    sessions.delete(token);
+function getSessionId(req) {
+  const token = req.cookies.authToken;
+  return typeof token === 'string' && /^[0-9a-f]{64}$/.test(token)
+    ? hashSessionToken(token)
+    : null;
+}
+
+async function requireAuth(req, res, next) {
+  const sessionId = getSessionId(req);
+  const session = sessionId && await app.locals.sessionsCollection.findOne({
+    _id: sessionId,
+    expiresAt: { $gt: new Date() },
+  });
+
+  if (!session) {
 
     return res.status(401).json({
       message: 'Please log in to continue.',
@@ -33,8 +44,6 @@ async function requireAuth(req, res, next) {
   );
 
   if (!user) {
-    sessions.delete(token);
-
     return res.status(401).json({
       message: 'Please log in to continue.',
     });
@@ -117,9 +126,10 @@ app.post('/api/auth/login', async (req, res) => {
 
   const token = randomBytes(32).toString('hex');
 
-  sessions.set(token, {
+  await app.locals.sessionsCollection.insertOne({
+    _id: hashSessionToken(token),
     userKey,
-    expiresAt: Date.now() + sessionDurationMs,
+    expiresAt: new Date(Date.now() + sessionDurationMs),
   });
 
   res.cookie('authToken', token, {
@@ -138,9 +148,11 @@ app.get('/api/user/me', requireAuth, (req, res) => {
   res.json({ username: req.user.username });
 });
 
-app.delete('/api/auth/logout', (req, res) => {
-  const token = req.cookies.authToken;
-  sessions.delete(token);
+app.delete('/api/auth/logout', async (req, res) => {
+  const sessionId = getSessionId(req);
+  if (sessionId) {
+    await app.locals.sessionsCollection.deleteOne({ _id: sessionId });
+  }
 
   res.clearCookie('authToken', {
     httpOnly: true,
@@ -248,9 +260,11 @@ if (require.main === module) {
   const { connectDatabase } = require('./database');
 
   connectDatabase()
-    .then(database => {
+    .then(async database => {
       app.locals.attemptsCollection = database.collection('attempts');
       app.locals.usersCollection = database.collection('users');
+      app.locals.sessionsCollection = database.collection('sessions');
+      await app.locals.sessionsCollection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
       console.log('Connected to the Pitch Royale database.');
       app.listen(port, () => {
         console.log(`Pitch Royale service running at http://localhost:${port}`);

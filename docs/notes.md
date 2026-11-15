@@ -106,3 +106,14 @@ Protected requests fetch the account identified by the session.
 Accounts created with this version survive a restart. Existing in-memory
 accounts are not migrated, and session cookies still require a fresh sign-in
 after a restart.
+
+### Keeping login sessions across restarts
+
+A successful login writes the player's account ID, a SHA-256 hash of the random
+cookie token, and a 24-hour expiration date to the `sessions` collection. The
+browser keeps the original token. Protected routes hash it and look up a session
+whose expiration date is still in the future. MongoDB's TTL index removes expired
+sessions in the background. Logout deletes the session and clears the cookie.
+
+Sessions created before this change require a fresh sign-in. New sessions
+can be used after the service restarts until they expire or the player logs out.

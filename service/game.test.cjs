@@ -1,5 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+const { createHash } = require('node:crypto');
 const app = require('./index');
 
 test('game API validates attempts, isolates players, and derives scores from history', async () => {
@@ -14,6 +15,19 @@ test('game API validates attempts, isolates players, and derives scores from his
     },
     async findOne({ _id }) {
       return savedUsers.get(_id) ?? null;
+    },
+  };
+  const savedSessions = new Map();
+  app.locals.sessionsCollection = {
+    async insertOne(session) {
+      savedSessions.set(session._id, session);
+    },
+    async findOne({ _id, expiresAt }) {
+      const session = savedSessions.get(_id);
+      return session && session.expiresAt > expiresAt.$gt ? session : null;
+    },
+    async deleteOne({ _id }) {
+      savedSessions.delete(_id);
     },
   };
   let databaseUnavailable = false;
@@ -115,7 +129,17 @@ test('game API validates attempts, isolates players, and derives scores from his
     assert.deepEqual(board.map(row => [row.name, row.highestStreak]), [['Bob', 2], ['Alice', 1], ['oldplayer', 1]]);
     assert.equal(board[0].dateRecorded, new Date().toISOString().slice(0, 10));
     assert.deepEqual(Object.keys(board[0]).sort(), ['dateRecorded', 'highestStreak', 'name']);
+    const aliceToken = alice.slice('authToken='.length);
+    const aliceSessionId = createHash('sha256').update(aliceToken).digest('hex');
+    assert.equal(savedSessions.get(aliceSessionId).userKey, 'alice');
+    assert.equal(savedSessions.has(aliceToken), false);
+
+    const bobSession = [...savedSessions.values()].find(session => session.userKey === 'bob');
+    bobSession.expiresAt = new Date(0);
+    assert.equal((await request('/api/stats', { cookie: bob })).status, 401);
+
     assert.equal((await request('/api/auth/logout', { method: 'DELETE', cookie: alice })).status, 204);
+    assert.equal(savedSessions.has(aliceSessionId), false);
     assert.equal((await request('/api/stats', { cookie: alice })).status, 401);
     assert.equal((await request('/api/attempts', { method: 'POST', cookie: alice, body: base })).status, 401);
   } finally {
