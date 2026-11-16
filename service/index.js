@@ -3,11 +3,19 @@ const { createHash, randomBytes } = require('node:crypto');
 const app = express();
 const port = 4000;
 const path = require('node:path');
+const { readFile } = require('node:fs/promises');
+const { parseEnv } = require('node:util');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const { pitchClasses, supportedModes, octaveNumbers, calculateProfile } = require('./telemetry');
 
 const sessionDurationMs = 24 * 60 * 60 * 1000; // 24 hours
+const geminiKeyPath = path.join(__dirname, '../keys/api_key.env');
+const coachInstructions = [
+  'You are the Pitch Royale ear-training coach. The game asks players to identify a single note or the root of a chord.',
+  'Use only the supplied aggregate practice stats. Base observations on notes and octaves with attempts, and acknowledge small samples.',
+  'In 2–4 sentences, point out a supported pattern and give one concrete listening drill. Use friendly plain text.',
+].join(' ');
 
 
 app.use(express.json());
@@ -208,6 +216,62 @@ app.get('/api/stats', requireAuth, async (req, res) => {
   const { userKey } = req.user;
   const attempts = await loadAttempts({ userKey });
   res.json(calculateProfile(attempts));
+});
+
+app.post('/api/coach', requireAuth, async (req, res) => {
+  const profile = calculateProfile(await loadAttempts({ userKey: req.user.userKey }));
+  if (profile.gamesPlayed === 0) {
+    return res.json({ insight: 'Play a few challenges first so I can suggest what to practice next.' });
+  }
+
+  try {
+    let apiKey = process.env.GEMINI_API_KEY?.trim();
+    if (!apiKey) {
+      const secretFile = await readFile(geminiKeyPath, 'utf8').catch(error => {
+        if (error.code === 'ENOENT') return '';
+        throw error;
+      });
+      // Also accept the existing file format, which contains just the key.
+      const bareKey = secretFile.trim();
+      console.log('Using Gemini API key from keys/api_key.env');
+      apiKey = parseEnv(secretFile).GEMINI_API_KEY?.trim()
+        || (/^(?:AQ\.|AIza)[A-Za-z0-9_-]+$/.test(bareKey) ? bareKey : '');
+    }
+    if (!apiKey) {
+      return res.status(503).json({ message: 'The AI coach has not been configured yet.' });
+    }
+
+    const model = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: coachInstructions }] },
+          contents: [{ role: 'user', parts: [{ text: JSON.stringify(profile) }] }],
+          generationConfig: { maxOutputTokens: 512 },
+        }),
+        signal: AbortSignal.timeout(15000),
+      },
+    );
+
+    if (response.status === 429) {
+      return res.status(429).json({ message: 'The AI coach has reached its usage limit. Try again later.' });
+    }
+    if (!response.ok) throw new Error(`Gemini returned HTTP ${response.status}`);
+
+    const result = await response.json();
+    const insight = result.candidates?.[0]?.content?.parts
+      ?.filter(part => !part.thought)
+      .map(part => part.text ?? '')
+      .join('')
+      .trim();
+    if (!insight) throw new Error('Gemini returned no coaching feedback');
+    return res.json({ insight });
+  } catch {
+    return res.status(503).json({ message: 'The AI coach is temporarily unavailable. Try again later.' });
+  }
 });
 
 app.get('/api/leaderboard', async (req, res) => {

@@ -28,3 +28,4 @@ export function submitAttempt(attempt) {
 
 export const fetchPlayerStats = (signal) => requestGame('/api/stats', { signal });
 export const fetchLeaderboard = (signal) => requestGame('/api/leaderboard', { signal });
+export const fetchCoachInsight = () => requestGame('/api/coach', { method: 'POST' });

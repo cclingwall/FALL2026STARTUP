@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchLeaderboard, fetchPlayerStats } from '../utils/gameService.js';
+import { fetchCoachInsight, fetchLeaderboard, fetchPlayerStats } from '../utils/gameService.js';
 import './scores.css';
 
 const intervalsFromC = {
@@ -42,48 +42,6 @@ function getMostChallengingOctave(octaveStats) {
   return Object.entries(octaveStats)
     .filter(([, stats]) => stats.attempts > 0)
     .sort(([, statsA], [, statsB]) => statsA.accuracy - statsB.accuracy)[0] || null;
-}
-
-export function generateMockAICoachResponse(telemetry) {
-  if (telemetry.gamesPlayed === 0) {
-    return 'Play a few challenges first. Once you have some attempts, I can highlight your strongest intervals and suggest what to practice next.';
-  }
-
-  const strongestNote = getStrongestNote(telemetry.noteStats);
-  const challengingNote = getMostChallengingNote(telemetry.noteStats);
-  const challengingOctave = getMostChallengingOctave(telemetry.octaveStats);
-  const averageSeconds = (telemetry.avgResponseTimeMs / 1000).toFixed(1);
-  const strengths = strongestNote
-    ? `You are strongest on ${intervalsFromC[strongestNote]}s (${strongestNote}), with ${getAccuracy(
-      telemetry.noteStats[strongestNote].correct,
-      telemetry.noteStats[strongestNote].attempts
-    )} accuracy`
-    : 'There is not enough note-specific practice yet to identify a strongest interval';
-  const challenges = [];
-
-  if (challengingNote) {
-    const [note, stats] = challengingNote;
-    challenges.push(
-      `${getAccuracy(stats.correct, stats.attempts)} on ${note} (${intervalsFromC[note]} from C)`
-    );
-  }
-  if (challengingOctave) {
-    const [octave, stats] = challengingOctave;
-    challenges.push(`${stats.accuracy}% in Octave ${octave}`);
-  }
-
-  const practiceSuggestion = challengingOctave?.[0] === '3'
-    ? ' Try singing from Reference C4 down to the root before guessing low-octave notes.'
-    : ' Keep alternating focused interval practice with mixed challenges to reinforce recognition.';
-
-  return `Your average reaction time is ${averageSeconds}s. ${strengths}.${challenges.length
-    ? ` Your current challenges are ${challenges.join(' and ')}.`
-    : ''}${practiceSuggestion}`;
-}
-
-export async function getAICoachInsights(telemetryPayload) {
-  await new Promise((resolve) => window.setTimeout(resolve, 700));
-  return generateMockAICoachResponse(telemetryPayload);
 }
 
 export function Scores({ userName, onAuthChange }) {
@@ -137,12 +95,14 @@ export function Scores({ userName, onAuthChange }) {
     }
 
     setIsAnalyzing(true);
+    setCoachInsight('');
     setCoachError('');
     try {
-      const insight = await getAICoachInsights(profile);
+      const { insight } = await fetchCoachInsight();
       setCoachInsight(insight);
     } catch (error) {
-      setCoachError(`Could not analyze your stats: ${error.message}`);
+      if (error.status === 401) onAuthChange('');
+      else setCoachError(error.message);
     } finally {
       setIsAnalyzing(false);
     }
